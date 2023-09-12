@@ -11,59 +11,87 @@ export default function Osc({ oscType, notesDelay, scaleNotes, bpm }) {
   const [secondProgression, setSecondProgression] = useState(0);
   const [thirdProgression, setThirdProgression] = useState(0);
   const [fourthProgression, setFourthProgression] = useState(0);
+  
   const [chordDuration, setChordDuration] = useState(2);
 
-  console.log(allExportNotes)
 
-  function startOsc(step, tempo) {
-    const playedNotes = [];
-    const velocity = [0.3, 0.5, 0.5, 0.5];
+  //GET PROGRESSION NOTES
+  function getProgressionNotes(fp, sp, tp, frp) {
+    const progression = [fp, sp, tp, frp];
     
-    const oneBeat = 60 / tempo * chordDuration;
-
-      for (let i = 0; i < 4; i++) {
-        setTimeout(() => {
-
+    const first = []
+    let all = [];
+    for(let l=0; l < 4; l++){
+      let some = [];
+      const step = Number(progression[l])
+    
+      for(let i=0; i < 4; i++){
         const noteIndex = (i * 2) + step;
-        if (scaleNotes[noteIndex]) {
+        some.push(scaleNotes[noteIndex])
+      }
+      all.push(some)
+  }
+
+    return all
+  }
+
+  //GET CHORD NOTES
+  function getChordNotes(step) {
+
+    let chordNotes = [];
+    for(let i=0; i < 4; i++){
+      const noteIndex = (i * 2) + step;
+      chordNotes.push(scaleNotes[noteIndex])
+    }
+    return chordNotes
+  }
+
+
+  //PLAY OSCILATOR
+  function startOsc(tempo, currentChordNotes) {
+    const velocity = [0.1, 0.3, 0.3, 0.3];
+    const oneBeat = 60 / tempo * chordDuration;
+  
+      for (let i = 0; i < 4; i++) {
+        const timeout = setTimeout(() => {
           
           const audioContext = new AudioContext();
           const o = audioContext.createOscillator();
           const g = audioContext.createGain();
           o.type = oscType;
-          o.frequency.value = Number(scaleNotes[noteIndex].freq);
+          o.frequency.value = Number(currentChordNotes[i].freq);
           o.connect(g);
           g.connect(audioContext.destination);
 
-          g.gain.value = velocity[i];
-          g.gain.exponentialRampToValueAtTime(0.5, oneBeat / 2);
+          g.gain.value = 0.05;
+          g.gain.linearRampToValueAtTime(0.05, oneBeat / 2);
           g.gain.linearRampToValueAtTime(0, oneBeat);
         
           o.start(0);
-          o.stop(oneBeat);
-  
-          playedNotes.push(scaleNotes[noteIndex].name);
-     
-        }
+          o.stop(oneBeat);   
+
       }, i * notesDelay)
       }
-
-      setExportNotes(playedNotes);
-
   }
 
+
+  //PLAY CHORD PROGRESSION AND GENERATE NOTES
   function playProgression(fp, sp, tp, frp) {
-    const progression = [fp, sp, tp, frp];
-    setAllExportNotes([]);
+    const notes = getProgressionNotes(fp, sp, tp, frp);
+    setAllExportNotes(notes);
+
+    console.log(getChordNotes(0));
 
     for(let i=0; i < 4; i++){
-      setTimeout(() => {
-          startOsc(progression[i], bpm);
-      }, (chordDuration * 1000 * i * (60/bpm)));
-    };
+      const currentChordNotes = notes[i];
 
+      setTimeout(() => {
+          startOsc(bpm, currentChordNotes);
+      }, (chordDuration * 1000 * i * (60/bpm)));
+    } 
   }
 
+  //RANDOM PROGRESSION
   function randomProgressionFun() {
     const thisProgression = [];
 
@@ -78,25 +106,24 @@ export default function Osc({ oscType, notesDelay, scaleNotes, bpm }) {
     setFourthProgression(thisProgression[3]);
   }
 
-  //COLLECT WHOLE PROGRESSION TO EXPORT TO MIDI
-  useEffect(() => {
-    setAllExportNotes([
-      ...allExportNotes, exportNotes
-    ])
-    
-  }, [exportNotes])
-  
+  function playOneChord(step) {
+    const thisCHord = getChordNotes(step)
+
+    console.log(thisCHord);
+
+    startOsc(bpm, thisCHord)
+  }
 
   return (
     <div>
       <p>chords</p>
-      <button onClick={() => startOsc(0, bpm)}>I</button>
-      <button onClick={() => startOsc(1, bpm)}>II</button>
-      <button onClick={() => startOsc(2, bpm)}>III</button>
-      <button onClick={() => startOsc(3, bpm)}>IV</button>
-      <button onClick={() => startOsc(4, bpm)}>V</button>
-      <button onClick={() => startOsc(5, bpm)}>VI</button>
-      <button onClick={() => startOsc(6, bpm)}>VII</button>
+      <button onClick={() => playOneChord(0)}>I</button>
+      <button onClick={() => playOneChord(1)}>II</button>
+      <button onClick={() => playOneChord(2)}>III</button>
+      <button onClick={() => playOneChord(3)}>IV</button>
+      <button onClick={() => playOneChord(4)}>V</button>
+      <button onClick={() => playOneChord(5)}>VI</button>
+      <button onClick={() => playOneChord(6)}>VII</button>
 
       <br/> 
       <button onClick={randomProgressionFun}>RANDOM PROGRESSION</button>

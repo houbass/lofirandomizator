@@ -9,7 +9,12 @@ export default function Settings() {
   const [bpm, setBpm] = useState(70);
   const [tonality, setTonality] = useState(0);
   const [scale, setScale] = useState("major"); // Store the scale type as a string
+
   const [scaleNotes, setScaleNotes] = useState([]);
+  const [scaleNotes2, setScaleNotes2] = useState([]);
+
+
+
   const [oscType, setOscType] = useState("sine");
   const [notesDelay, setNotesDelay] = useState(0);
 
