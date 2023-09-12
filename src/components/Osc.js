@@ -1,129 +1,168 @@
-
-
-import { useState } from "react";
-
-//COMPONENTS
+import { useState, useEffect } from "react";
 import MidiExport from "./MidiExport";
 import Voicing from "./Voicing";
 
-export default function Osc({ oscType, notesDelay, scaleNotes }) {
+export default function Osc({ oscType, notesDelay, scaleNotes, bpm }) {
+  const { voicing } = Voicing();
+  const [exportNotes, setExportNotes] = useState([]);
+  const [allExportNotes, setAllExportNotes] = useState([]);
 
-    //VOICING
-    const {voicing} = Voicing();
+  const [firstProgression, setFirstProgression] = useState(0);
+  const [secondProgression, setSecondProgression] = useState(0);
+  const [thirdProgression, setThirdProgression] = useState(0);
+  const [fourthProgression, setFourthProgression] = useState(0);
+  const [chordDuration, setChordDuration] = useState(2);
 
-    //PLAYED NOTES
-    const [exportNotes, setExportNotes] = useState(["F3", "G#3"]);
+  console.log(allExportNotes)
 
-    //osc
-    const playTime = 4;
+  function startOsc(step, tempo) {
+    const playedNotes = [];
+    const velocity = [0.3, 0.5, 0.5, 0.5];
+    
+    const oneBeat = 60 / tempo * chordDuration;
 
-    //RANDOM PROGRESSION
-    const [randomProgression, setRandomProgression] = useState([]);
+      for (let i = 0; i < 4; i++) {
+        setTimeout(() => {
 
-    //PLAY FUNCTION
-    function startOsc(step) {
-        const playedNotes = [];
-        const velocity = [0.3, 0.5, 0.5, 0.5];
-        //const currentVoicing = voicing.filter((item) => item.tonality === scaleNotes[step].name)
-        console.log(scaleNotes[step].name)
+        const noteIndex = (i * 2) + step;
+        if (scaleNotes[noteIndex]) {
+          
+          const audioContext = new AudioContext();
+          const o = audioContext.createOscillator();
+          const g = audioContext.createGain();
+          o.type = oscType;
+          o.frequency.value = Number(scaleNotes[noteIndex].freq);
+          o.connect(g);
+          g.connect(audioContext.destination);
 
-        for(let i=0; i < 4; i++) {
-              
-                //setTimeout(() => {
-                    const context = new AudioContext();
-                    //osc
-                    const o = context.createOscillator();
-                    //gain
-                    const g = context.createGain();
-                    //osc type
-                    o.type = oscType;
-                    //frequency
-                    o.frequency.value = Number(scaleNotes[(i * 2) + step].freq);
-                    //o.frequency.value = Number(scaleNotes[(i * 2) + step].freq * currentVoicing[1].voicing[i]);
-
-                    o.connect(g);
-                    g.connect(context.destination);
-                    g.gain.value = velocity[i];
-                    g.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + playTime);
-                    o.start();
-                    o.stop(playTime);
-
-                    playedNotes.push(scaleNotes[(i * 2) + step].name);
-                //}, (i / 2) * notesDelay)
+          g.gain.value = velocity[i];
+          g.gain.exponentialRampToValueAtTime(0.5, oneBeat / 2);
+          g.gain.linearRampToValueAtTime(0, oneBeat);
+        
+          o.start(0);
+          o.stop(oneBeat);
+  
+          playedNotes.push(scaleNotes[noteIndex].name);
+     
         }
-        setExportNotes(playedNotes);
-        //console.log(playedNotes);
+      }, i * notesDelay)
+      }
+
+      setExportNotes(playedNotes);
+
+  }
+
+  function playProgression(fp, sp, tp, frp) {
+    const progression = [fp, sp, tp, frp];
+    setAllExportNotes([]);
+
+    for(let i=0; i < 4; i++){
+      setTimeout(() => {
+          startOsc(progression[i], bpm);
+      }, (chordDuration * 1000 * i * (60/bpm)));
     };
 
-    function randomProgressionFun() {
+  }
 
-        const thisProgression = [];
+  function randomProgressionFun() {
+    const thisProgression = [];
 
-        for(let i=0; i < 4; i++){
-            const randomNumber = Math.round(Math.random() * 6) + 1;
-            thisProgression.push(randomNumber);
-        }
-        console.log(thisProgression);
-        setRandomProgression(thisProgression);
+    for (let i = 0; i < 4; i++) {
+      const randomNumber = Math.round(Math.random() * 6) + 1;
+      thisProgression.push(randomNumber);
     }
 
-    return(
-        <>
-        <div>
-            <p>chords</p>
+    setFirstProgression(thisProgression[0]);
+    setSecondProgression(thisProgression[1]);
+    setThirdProgression(thisProgression[2]);
+    setFourthProgression(thisProgression[3]);
+  }
 
-            <button onClick={() => startOsc(0)}>I</button>
-            <button onClick={() => startOsc(1)}>II</button>
-            <button onClick={() => startOsc(2)}>III</button>
-            <button onClick={() => startOsc(3)}>IV</button>
-            <button onClick={() => startOsc(4)}>V</button>
-            <button onClick={() => startOsc(5)}>VI</button>
-            <button onClick={() => startOsc(6)}>VII</button>
+  //COLLECT WHOLE PROGRESSION TO EXPORT TO MIDI
+  useEffect(() => {
+    setAllExportNotes([
+      ...allExportNotes, exportNotes
+    ])
+    
+  }, [exportNotes])
+  
 
-            <br/>   
-            <button onClick={randomProgressionFun}>RANDOM PROGRESSION</button>
-            <p>{randomProgression}</p>
+  return (
+    <div>
+      <p>chords</p>
+      <button onClick={() => startOsc(0, bpm)}>I</button>
+      <button onClick={() => startOsc(1, bpm)}>II</button>
+      <button onClick={() => startOsc(2, bpm)}>III</button>
+      <button onClick={() => startOsc(3, bpm)}>IV</button>
+      <button onClick={() => startOsc(4, bpm)}>V</button>
+      <button onClick={() => startOsc(5, bpm)}>VI</button>
+      <button onClick={() => startOsc(6, bpm)}>VII</button>
 
-            <p>progression</p>
-            <select>
-                <option>I</option>
-                <option>II</option>
-                <option>III</option>
-                <option>IV</option>
-                <option>V</option>
-                <option>VI</option>
-                <option>VII</option>
-            </select>
-            <select>
-                <option>I</option>
-                <option>II</option>
-                <option>III</option>
-                <option>IV</option>
-                <option>V</option>
-                <option>VI</option>
-                <option>VII</option>
-            </select>
-            <select>
-                <option>I</option>
-                <option>II</option>
-                <option>III</option>
-                <option>IV</option>
-                <option>V</option>
-                <option>VI</option>
-                <option>VII</option>
-            </select>
-            <select>
-                <option>I</option>
-                <option>II</option>
-                <option>III</option>
-                <option>IV</option>
-                <option>V</option>
-                <option>VI</option>
-                <option>VII</option>
-            </select>
+      <br/> 
+      <button onClick={randomProgressionFun}>RANDOM PROGRESSION</button>
+
+      <div style={{ background: "orange", display: "flex", flexDirection: "column" }}>
+        <p>progression</p>
+        <div style={{ background: "orange", display: "flex", flexDirection: "row" }}>
+        <p>progression</p>
+
+<div 
+style={{
+    background: "orange",
+    display: "flex",
+    flexDirection: "row"
+}}>
+    <select value={firstProgression} onChange={(e) => {setFirstProgression(Number(e.target.value))}}>
+        <option value={0}>I</option>
+        <option value={1}>II</option>
+        <option value={2}>III</option>
+        <option value={3}>IV</option>
+        <option value={4}>V</option>
+        <option value={5}>VI</option>
+        <option value={6}>VII</option>
+    </select>
+    <select value={secondProgression} onChange={(e) => {setSecondProgression(Number(e.target.value))}}>
+        <option value={0}>I</option>
+        <option value={1}>II</option>
+        <option value={2}>III</option>
+        <option value={3}>IV</option>
+        <option value={4}>V</option>
+        <option value={5}>VI</option>
+        <option value={6}>VII</option>
+    </select>
+    <select value={thirdProgression} onChange={(e) => {setThirdProgression(Number(e.target.value))}}>
+        <option value={0}>I</option>
+        <option value={1}>II</option>
+        <option value={2}>III</option>
+        <option value={3}>IV</option>
+        <option value={4}>V</option>
+        <option value={5}>VI</option>
+        <option value={6}>VII</option>
+    </select>
+    <select value={fourthProgression} onChange={(e) => {setFourthProgression(Number(e.target.value))}}>
+        <option value={0}>I</option>
+        <option value={1}>II</option>
+        <option value={2}>III</option>
+        <option value={3}>IV</option>
+        <option value={4}>V</option>
+        <option value={5}>VI</option>
+        <option value={6}>VII</option>
+    </select>
+</div>
         </div>
 
-        <MidiExport exportNotes={exportNotes}/>
-        </>
-    )
+
+        <div style={{ background: "orange", display: "flex", flexDirection: "row" }}>
+          <select value={chordDuration} onChange={(e) => setChordDuration(Number(e.target.value))}>
+            <option value={1}>1</option>
+            <option value={2}>2</option>
+            <option value={4}>4</option>
+          </select>
+          <label>chord duration</label>
+        </div>
+        <button onClick={() => playProgression(firstProgression, secondProgression, thirdProgression, fourthProgression)}>play</button>
+      </div>
+      <MidiExport exportNotes={allExportNotes} chordDuration={chordDuration} />
+    </div>
+  );
 }

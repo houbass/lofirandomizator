@@ -140,5 +140,7 @@ export default function Notes() {
         },
     ]
 
-    return {notes}
+    const tonalities = ["D#3", "E3","F3","F#3","G3","G#3","A3","A#3","B3","C4","C#4","D4",]
+
+    return {notes, tonalities}
 }
