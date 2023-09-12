@@ -11,7 +11,7 @@ export default function Settings() {
   const [scale, setScale] = useState("major"); // Store the scale type as a string
   const [scaleNotes, setScaleNotes] = useState([]);
   const [oscType, setOscType] = useState("sine");
-  const [notesDelay, setNotesDelay] = useState(200);
+  const [notesDelay, setNotesDelay] = useState(0);
 
   // Define major and minor scales as an object
   const scales = {
