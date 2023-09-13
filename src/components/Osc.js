@@ -146,7 +146,7 @@ export default function Osc({ oscType, notesDelay, scaleNotes, bpm }) {
           //const audioContext = new AudioContext() || window.webkitAudioContext();
           const o = audioContext.createOscillator();
           const g = audioContext.createGain();
-          o.type = oscType;
+          o.type = "sine";
           o.frequency.value = 630;
           o.connect(g);
           g.connect(audioContext.destination);
