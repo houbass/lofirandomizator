@@ -24,6 +24,7 @@ export default function Osc({ oscType, notesDelay, scaleNotes, bpm }) {
   const [rhythmStyle, setRhythmStyle] = useState(1);
   const [newRyhtmProgression, setNewRyhtmProgression] = useState();
 
+  const audioContext = new AudioContext() || window.webkitAudioContext();
 
   //RANDOM PROGRESSION
   function randomProgressionFun() {
@@ -79,8 +80,6 @@ export default function Osc({ oscType, notesDelay, scaleNotes, bpm }) {
 
     startOsc(bpm, thisCHord, 2)
   }
-
-
 
   //COMBINE RHYTHM AND NOTES
   function createRhythmFun() {
@@ -139,12 +138,12 @@ export default function Osc({ oscType, notesDelay, scaleNotes, bpm }) {
   function startMetronome() {
 
     const oneBeat = (1000 * 60 / bpm / 1) ;
-    const click = 0.1
+    const click = 0.075
 
     for(let i=0; i < (16 / chordRate); i++){
 
       setTimeout(() => {
-          const audioContext = new AudioContext() || window.webkitAudioContext();
+          //const audioContext = new AudioContext() || window.webkitAudioContext();
           const o = audioContext.createOscillator();
           const g = audioContext.createGain();
           o.type = oscType;
@@ -154,10 +153,10 @@ export default function Osc({ oscType, notesDelay, scaleNotes, bpm }) {
 
           g.gain.value = 0.05;
           //g.gain.linearRampToValueAtTime(0.05, click / 4);
-          g.gain.linearRampToValueAtTime(0, click);
+          g.gain.linearRampToValueAtTime(0,audioContext.currentTime + click);
         
-          o.start(0);
-          o.stop( click);  
+          o.start(audioContext.currentTime);
+          o.stop(audioContext.currentTime + click);  
 
         }, oneBeat * i)
     }
@@ -166,7 +165,7 @@ export default function Osc({ oscType, notesDelay, scaleNotes, bpm }) {
   //PLAY OSCILATOR
   function startOsc(tempo, currentChordNotes, duration) {
 
-    const audioContext = new AudioContext() || window.webkitAudioContext();
+    
     
     const velocity = [0.1, 0.3, 0.3, 0.3];
     const oneBeat = (4 * 60 / tempo / duration) / chordRate ;
@@ -181,11 +180,11 @@ export default function Osc({ oscType, notesDelay, scaleNotes, bpm }) {
       g.connect(audioContext.destination);
 
       g.gain.value = 0.05;
-      g.gain.linearRampToValueAtTime(0.05, oneBeat / 2);
-      g.gain.linearRampToValueAtTime(0, oneBeat);
+      g.gain.linearRampToValueAtTime(0.05,audioContext.currentTime + oneBeat / 2);
+      g.gain.linearRampToValueAtTime(0, audioContext.currentTime + oneBeat);
     
-      o.start(0);
-      o.stop( oneBeat);  
+      o.start(audioContext.currentTime);
+      o.stop( audioContext.currentTime + oneBeat);  
     })
   }
 
