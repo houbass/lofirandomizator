@@ -21,9 +21,6 @@ export default function MidiExport({ exportNotes, chordRate }) {
                 thisNotes.push(item2.name)
             })
 
-            console.log(thisDuration)
-            console.log(thisDuration / chordRate)
-
             return new MidiWriter.NoteEvent({pitch: thisNotes, wait: (thisWait * chordRate), duration: (thisDuration * chordRate), })
         })
 
@@ -38,7 +35,6 @@ export default function MidiExport({ exportNotes, chordRate }) {
         setMidiData(data);
         }
         catch(err) {
-
         }
     };
 

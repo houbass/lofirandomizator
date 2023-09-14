@@ -10,10 +10,22 @@ export default function Settings() {
   const [tonality, setTonality] = useState(0);
   const [scale, setScale] = useState("major"); // Store the scale type as a string
 
-  const [scaleNotes, setScaleNotes] = useState([]);
-  const [scaleNotes2, setScaleNotes2] = useState([]);
-
-
+  const [scaleNotes, setScaleNotes] = useState([
+    {name: 'D#3', freq: 155.6},
+    {name: 'F3', freq: 174.6},
+    {name: 'G3', freq: 196},
+    {name: 'G#3', freq: 207.7},
+    {name: 'A#3', freq: 233.1},
+    {name: 'C4', freq: 261.6},
+    {name: 'D4', freq: 293.7},
+    {name: 'D#4', freq: 311.1},
+    {name: 'F4', freq: 349.2},
+    {name: 'G4', freq: 392},
+    {name: 'G#4', freq: 415.3},
+    {name: 'A#4', freq: 466.2},
+    {name: 'C5', freq: 523.3},
+    {name: 'D5', freq: 587.3},
+    {name: 'D#5', freq: 622.3}]);
 
   const [oscType, setOscType] = useState("sine");
   const [notesDelay, setNotesDelay] = useState(0);
@@ -25,7 +37,6 @@ export default function Settings() {
   };
 
   // Set scale notes based on scale type and tonality
-  
   useEffect(() => {
     const settingScaleNotes = [];
     const selectedScale = scales[scale]; // Get the selected scale from the scales object
@@ -36,8 +47,6 @@ export default function Settings() {
     setScaleNotes(settingScaleNotes);
   }, [scale, tonality]);
 
-
-  
 
   return (
     <div>
@@ -54,7 +63,7 @@ export default function Settings() {
       <label htmlFor="bpm">{bpm}BPM</label>
 
       <p>tonality setting</p>
-      <select onChange={(e) => setTonality(Number(e.target.value))}>
+      <select value={tonality} onChange={(e) => setTonality(Number(e.target.value))}>
         {tonalities.map((tone, index) => (
           <option key={index} value={index}>
             {tone}
@@ -83,7 +92,8 @@ export default function Settings() {
         step="10"
       ></input>
 
-      <Osc scaleNotes={scaleNotes} oscType={oscType} notesDelay={notesDelay} bpm={bpm} />
+      <Osc scaleNotes={scaleNotes} oscType={oscType} bpm={bpm} scale={scale}/>
+
     </div>
   );
 }

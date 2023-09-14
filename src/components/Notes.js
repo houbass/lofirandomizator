@@ -4,7 +4,18 @@
 export default function Notes() {
 
     const notes = [
-
+        {
+            name: "C3",
+            freq: 130.8,
+        },
+        {
+            name: "C#3",
+            freq: 138.6,
+        },
+        {
+            name: "D3",
+            freq: 146.8,
+        },
         {
             name: "D#3",
             freq: 155.6,
@@ -140,7 +151,8 @@ export default function Notes() {
         },
     ]
 
-    const tonalities = ["D#3", "E3","F3","F#3","G3","G#3","A3","A#3","B3","C4","C#4","D4",]
+    const tonalities = ["C","C#","D","D#", "E","F","F#","G","G#","A","A#","B"]
+
 
     return {notes, tonalities}
 }
