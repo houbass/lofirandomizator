@@ -11,7 +11,7 @@ export default function Voicing() {
             voicing: [
                 //1
                 [
-                    {name: "C3", freq: 130.8},
+                    {name: "C5", freq: 130.8 * 3},
                     {name: "E3", freq: 164.8},
                     {name: "G3", freq: 196},
                     {name: "B3", freq: 246.9}
@@ -39,7 +39,7 @@ export default function Voicing() {
             voicing: [
                 //1
                 [
-                    {name: "C3", freq: 130.8},
+                    {name: "C5", freq: 130.8 * 3},
                     {name: "D#3", freq: 155.6},
                     {name: "G3", freq: 196},
                     {name: "A#3", freq: 233.1}
@@ -67,7 +67,7 @@ export default function Voicing() {
             voicing: [
                 //1
                 [
-                    {name: "C3", freq: 130.8},
+                    {name: "C5", freq: 130.8 * 3},
                     {name: "E3", freq: 164.8},
                     {name: "G3", freq: 196},
                     {name: "A#3", freq: 233.1}
@@ -936,13 +936,94 @@ export default function Voicing() {
             ]
         },
 
-        /*
+        {
+            //BMAJ
+            name: "Bmajor",
+            voicing: [
+                //1
+                [
+                    {name: "B3", freq: 246.9},
+                    {name: "D#4", freq: 311.1},
+                    {name: "F#4", freq: 370.0},
+                    {name: "A#4", freq: 466.2}
 
-        POKRAČOVAT S "B" .....
+                ],
+                //2
+                [
+                    {name: "B4", freq: 246.9 * 2},
+                    {name: "D#4", freq: 311.1},
+                    {name: "F#4", freq: 370.0},
+                    {name: "A#3", freq: 466.2 / 2}
 
+                ],
+                //3
+                [
+                    //{name: "B3", freq: 246.9},
+                    {name: "D#4", freq: 311.1},
+                    {name: "F#3", freq: 370.0 / 2},
+                    {name: "F#4", freq: 370.0},
+                    {name: "A#3", freq: 466.2 / 2}
+                ],
+            ]
+        },
 
-        */
+        {
+            //BMIN
+            name: "Bminor",
+            voicing: [
+                //1
+                [
+                    {name: "B3", freq: 246.9},
+                    {name: "D4", freq: 293.7},
+                    {name: "F#4", freq: 370.0},
+                    {name: "A4", freq: 440.0}
+                ],
+                //2
+                [
+                    {name: "B4", freq: 246.9 * 2},
+                    {name: "D4", freq: 293.7},
+                    {name: "F#4", freq: 370.0},
+                    {name: "A3", freq: 440.0 / 2}
+                ],
+                //3
+                [
+                    //{name: "B3", freq: 246.9},
+                    {name: "D4", freq: 293.7},
+                    {name: "F#3", freq: 370.0 / 2},
+                    {name: "F#4", freq: 370.0},
+                    {name: "A3", freq: 440.0 / 2}
+                ],
+            ]
+        },
 
+        {
+            //BDIM
+            name: "Bdim",
+            voicing: [
+                //1
+                [
+                    {name: "B3", freq: 246.9},
+                    {name: "D#4", freq: 311.1},
+                    {name: "F#4", freq: 370.0},
+                    {name: "A4", freq: 440.0}
+                ],
+                //2
+                [
+                    {name: "B4", freq: 246.9 * 2},
+                    {name: "D#4", freq: 311.1},
+                    {name: "F#4", freq: 370.0},
+                    {name: "A3", freq: 440.0 / 2}
+                ],
+                //3
+                [
+                    //{name: "B3", freq: 246.9},
+                    {name: "D#4", freq: 311.1},
+                    {name: "F#3", freq: 370.0 / 2},
+                    {name: "F#4", freq: 370.0},
+                    {name: "A3", freq: 440.0 / 2}
+                ],
+            ]
+        },
 
     ]
     return { voicing }
