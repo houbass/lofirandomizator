@@ -3,12 +3,12 @@
 import './App.css';
 
 //COMPONENTS
-import Settings from './components/Settings';
+import Mainpage from './components/Mainpage';
 
 function App() {
   return (
-    <div>
-      <Settings/>
+    <div className='app'>
+      <Mainpage />
     </div>
   );
 }

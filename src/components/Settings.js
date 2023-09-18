@@ -4,11 +4,8 @@ import React, { useEffect, useState } from "react";
 import Osc from "./Osc";
 import Notes from "./Notes";
 
-export default function Settings() {
-  const { notes, tonalities } = Notes();
-  const [bpm, setBpm] = useState(70);
-  const [tonality, setTonality] = useState(0);
-  const [scale, setScale] = useState("major"); // Store the scale type as a string
+export default function Settings({ tonality, scale, bpm }) {
+  const { notes } = Notes();
 
   const [scaleNotes, setScaleNotes] = useState([
     {name: 'D#3', freq: 155.6},
@@ -28,7 +25,6 @@ export default function Settings() {
     {name: 'D#5', freq: 622.3}]);
 
   const [oscType, setOscType] = useState("sine");
-  const [notesDelay, setNotesDelay] = useState(0);
 
   // Define major and minor scales as an object
   const scales = {
@@ -47,34 +43,10 @@ export default function Settings() {
     setScaleNotes(settingScaleNotes);
   }, [scale, tonality]);
 
-
   return (
-    <div>
-      <p>tempo setting</p>
-      <input
-        id="bpm"
-        value={bpm}
-        type="range"
-        min="50"
-        max="140"
-        step="1"
-        onChange={(e) => setBpm(Number(e.target.value))}
-      ></input>
-      <label htmlFor="bpm">{bpm}BPM</label>
-
-      <p>tonality setting</p>
-      <select value={tonality} onChange={(e) => setTonality(Number(e.target.value))}>
-        {tonalities.map((tone, index) => (
-          <option key={index} value={index}>
-            {tone}
-          </option>
-        ))}
-      </select>
-
-      <select onChange={(e) => setScale(e.target.value)}>
-        <option value="major">major</option>
-        <option value="minor">minor</option>
-      </select>
+    <div className="settings">
+      
+      <Osc scaleNotes={scaleNotes} oscType={oscType} bpm={bpm} scale={scale}/>
 
       <p>osc setting</p>
       <select onChange={(e) => setOscType(e.target.value)}>
@@ -83,16 +55,8 @@ export default function Settings() {
         <option value="triangle">triangle</option>
         <option value="sawtooth">sawtooth</option>
       </select>
-      <input
-        value={notesDelay}
-        onChange={(e) => setNotesDelay(e.target.value)}
-        type="range"
-        min="0"
-        max="500"
-        step="10"
-      ></input>
 
-      <Osc scaleNotes={scaleNotes} oscType={oscType} bpm={bpm} scale={scale}/>
+      
 
     </div>
   );

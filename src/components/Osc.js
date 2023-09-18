@@ -25,8 +25,6 @@ export default function Osc({ oscType, scaleNotes, bpm, scale }) {
   const [chordname3, setChordname3] = useState("Cmajor");
   const [chordname4, setChordname4] = useState("Cmajor");
   
-
-  //console.log(chordname1)
   const filtered1 = voicing.filter((item) => item.name === chordname1);
   const filtered2 = voicing.filter((item) => item.name === chordname2);
   const filtered3 = voicing.filter((item) => item.name === chordname3);
@@ -38,7 +36,6 @@ export default function Osc({ oscType, scaleNotes, bpm, scale }) {
   const [rhythmStyle, setRhythmStyle] = useState(0);
   const [newRyhtmProgression, setNewRyhtmProgression] = useState();
 
-  const audioContext = new AudioContext() || window.webkitAudioContext();
 
   //RANDOM PROGRESSION AND VOICING
   function randomProgressionFun() {
@@ -64,24 +61,6 @@ export default function Osc({ oscType, scaleNotes, bpm, scale }) {
     setChoosedVoicing2(thisVoicing[1]);
     setChoosedVoicing3(thisVoicing[2]);
     setChoosedVoicing4(thisVoicing[3]);
-  }
-
-  //GET CHORD NOTES
-  function getChordNotes(step) {
-
-    let chordNotes = [];
-    for(let i=0; i < 4; i++){
-      const noteIndex = (i * 2) + step;
-      chordNotes.push(scaleNotes[noteIndex])
-    }
-    return chordNotes
-  }
-
-  //PLAY ONE CHORD
-  function playOneChord(step) {
-    const thisCHord = getChordNotes(step)
-
-    startOsc(bpm, thisCHord, 2)
   }
 
   //COMBINE RHYTHM AND NOTES
@@ -127,11 +106,14 @@ export default function Osc({ oscType, scaleNotes, bpm, scale }) {
 
 
   //RUN RYTHM PROGRESSION
-  function playRythm(tempo) {
+function playRythm(tempo) {
+    console.log("START")
 
-    startMetronome(tempo);
+    const audioContext = new AudioContext() || window.webkitAudioContext();
 
-    const beat = 60 /tempo;
+    startMetronome(tempo, audioContext);
+
+    const beat = 60 / tempo;
     let counter = 0;
     const thisRhythm = newRyhtmProgression;
 
@@ -150,16 +132,22 @@ export default function Osc({ oscType, scaleNotes, bpm, scale }) {
       counter = counter + waitMs;
 
       setTimeout(() => {
-          startOsc(tempo, item, duration);
+          startOsc(tempo, item, duration, audioContext);
       },  counter / chordRate );
 
       counter = counter + durationMs;
     })
-  }
 
+
+    setTimeout(() => {
+      console.log("STOP")
+    }, counter / chordRate)
+
+  }
+  
 
   //METRONOME
-  function startMetronome(tempo) {
+  function startMetronome(tempo, audioContext) {
 
     const oneBeat = (1000 * 60 / tempo / 1) ;
     const click = 0.075
@@ -181,13 +169,12 @@ export default function Osc({ oscType, scaleNotes, bpm, scale }) {
         
           o.start(audioContext.currentTime);
           o.stop(audioContext.currentTime + click);  
-
         }, oneBeat * i)
     }
   }
 
   //PLAY OSCILATOR
-  function startOsc(tempo, currentChordNotes, duration) {
+  function startOsc(tempo, currentChordNotes, duration, audioContext) {
 
     const velocity = [0.1, 0.3, 0.3, 0.3];
     const oneBeat = (4 * 60 / tempo / duration) / chordRate ;
@@ -197,6 +184,7 @@ export default function Osc({ oscType, scaleNotes, bpm, scale }) {
       const g = audioContext.createGain();
 
       o.type = oscType;
+      
       o.frequency.value = Number(item.freq);
       o.connect(g);
       g.connect(audioContext.destination);
@@ -204,7 +192,7 @@ export default function Osc({ oscType, scaleNotes, bpm, scale }) {
       g.gain.value = 0.05;
       g.gain.linearRampToValueAtTime(0.05,audioContext.currentTime + oneBeat / 2);
       g.gain.linearRampToValueAtTime(0, audioContext.currentTime + oneBeat);
-    
+
       o.start(audioContext.currentTime);
       o.stop( audioContext.currentTime + oneBeat);  
     })
@@ -284,7 +272,6 @@ export default function Osc({ oscType, scaleNotes, bpm, scale }) {
     const chordname1 = thisChordLetter1 + chordScale;
     const filteredNew = voicing.filter((item) => item.name === chordname1);
 
-    console.log(chordname1)
     return filteredNew[0]
   }
 
@@ -293,37 +280,28 @@ export default function Osc({ oscType, scaleNotes, bpm, scale }) {
     createRhythmFun()
   }, [scaleNotes, firstProgression, secondProgression, thirdProgression, fourthProgression, choosedVoicing1, choosedVoicing2, choosedVoicing3, choosedVoicing4, chordRate, rhythmStyle])
 
-  //test
-  function testing() {
-    const testNotes = [
-      {name: "D3", freq: 146.8 * 2},
-      {name: "F#3", freq: 185},
-      {name: "A3", freq: 220},
-      {name: "C#4", freq: 277.2}
-    ]
-
-    startOsc(bpm, testNotes, 2)
-
-  }
 
   return (
     <div>
 
-      <button onClick={testing}>TEST</button>
-      <p>chords</p>
-      <button onClick={() => playOneChord(0)}>I</button>
-      <button onClick={() => playOneChord(1)}>II</button>
-      <button onClick={() => playOneChord(2)}>III</button>
-      <button onClick={() => playOneChord(3)}>IV</button>
-      <button onClick={() => playOneChord(4)}>V</button>
-      <button onClick={() => playOneChord(5)}>VI</button>
-      <button onClick={() => playOneChord(6)}>VII</button>
-
-      <br/> 
-      <button onClick={randomProgressionFun}>RANDOM PROGRESSION</button>
-
+      <div
+      style={{
+        background: "lightblue",
+        width: "100%",
+        height: "100px",
+        display: "flex",
+        flexDirection: "row",
+      }}>
+        <div className="pad">
+        </div>
+        <div className="pad">
+        </div>
+        <div className="pad">
+        </div>
+        <div className="pad">
+        </div>
+      </div>
       <div style={{ background: "orange", display: "flex", flexDirection: "column" }}>
-        <p>progression</p>
         <div style={{ background: "grey", display: "flex", flexDirection: "column" }}>
 
           <div 
@@ -426,6 +404,7 @@ export default function Osc({ oscType, scaleNotes, bpm, scale }) {
           <label>chord rhythm</label>
 
         </div>
+        <button onClick={randomProgressionFun}>RANDOM PROGRESSION</button>
         <button onClick={() => {playRythm(bpm)}}>play</button>
       </div>
       <MidiExport exportNotes={newRyhtmProgression} chordRate={chordRate} />
