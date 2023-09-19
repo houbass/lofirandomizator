@@ -61,19 +61,42 @@ p, h1, h2, h3, h4, h5 {
 }
 
 
-.pad {
-    background: orange;
-    height: 100%;
-    width: 100%;
-    border-radius: 20px;
+.pad2 {
+    background-image: radial-gradient( rgb(184, 181, 48),  rgb(211, 100, 146));
+
+    transition: background-image 1s linear;
+}
+.pad2:hover{
+    background-image: radial-gradient(rgb(230, 127, 170), rgb(231, 228, 46) );
+
 }
 
-
-
-
-
-
-
+.pad {
+    position: relative;
+    background-image: radial-gradient( rgb(207, 205, 53),  rgb(206, 103, 146));
+    width: 100%;
+    padding-top: 25%; /* 1:1 Aspect Ratio */
+    border-radius: 20px;
+    z-index: 1;
+  }
+  
+  .pad::before {
+    position: absolute;
+    content: '';
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-image: radial-gradient(rgb(230, 127, 170), rgb(231, 228, 46) );
+    z-index: -1;
+    border-radius: 20px;
+    transition: opacity 0.5s linear;
+    opacity: 0;
+  }
+  
+  .pad:active::before {
+    opacity: 1;
+  }
 
 
 

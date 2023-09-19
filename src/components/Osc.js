@@ -548,15 +548,23 @@ export default function Osc({ oscType, scaleNotes, bpm, scale, loopStatus, metro
 
 
   return (
-    <div>
+    <div 
+    style={{
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      color:"white"
+  }}>
 
       <div
       style={{
-        background: "lightblue",
-        width: "100%",
-        height: "100px",
+        //background: "lightblue",
+        paddingTop:"20px",
+        width: "90%",
         display: "flex",
         flexDirection: "row",
+        gap: "10px",
+        margin: "0px 10px"
       }}>
         <div className="pad">
         </div>
