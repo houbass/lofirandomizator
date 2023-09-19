@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
 
+//pic
+import playImg from "./pic/play.svg";
+import stopImg from "./pic/stop.svg";
+import randomImg from "./pic/random.svg";
 
 //COMPONENTS
 import MidiExport from "./MidiExport";
@@ -12,7 +16,7 @@ import snareAudio from "./audio/snare.mp3";
 import hihatAudio from "./audio/hihat.mp3";
 
 
-export default function Osc({ oscType, scaleNotes, bpm, scale, loopStatus, metronomeStatus, drumStatus }) {
+export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatus, drumStatus }) {
   const { voicing } = Voicing();
   const { rhythm } = Rhythm ();
 
@@ -28,6 +32,9 @@ export default function Osc({ oscType, scaleNotes, bpm, scale, loopStatus, metro
   const [choosedVoicing3, setChoosedVoicing3] = useState(2);
   const [choosedVoicing4, setChoosedVoicing4] = useState(0);
 
+  //OSCILLATOR TYPE STATE
+  const [oscType, setOscType] = useState("sine");
+
   //CHORD NAME STATES
   const [chordname1, setChordname1] = useState("Cmajor");
   const [chordname2, setChordname2] = useState("Cmajor");
@@ -42,7 +49,7 @@ export default function Osc({ oscType, scaleNotes, bpm, scale, loopStatus, metro
 
   //CHORD STATES
   const [chordRate, setchordRate] = useState(2);
-  const [rhythmStyle, setRhythmStyle] = useState(0);
+  const [rhythmStyle, setRhythmStyle] = useState(1);
   const [newRyhtmProgression, setNewRyhtmProgression] = useState();
 
   //DRUM STATES
@@ -60,7 +67,7 @@ export default function Osc({ oscType, scaleNotes, bpm, scale, loopStatus, metro
   const [isPlayingTimeout, setIsPlayingTimeout] = useState([]);
   
   //PLAY/STOP BUTTON STATES
-  const [playStopText, setPlayStopText] = useState("PLAY");
+  const [playStopText, setPlayStopText] = useState(playImg);
 
   //RANDOM PROGRESSION AND VOICING
   function randomProgressionFun() {
@@ -130,16 +137,6 @@ export default function Osc({ oscType, scaleNotes, bpm, scale, loopStatus, metro
   }
 
 
-
-
-
-
-
-
-
-
-
-
   //PLAYSTOP
   function playStop(tempo) {
 
@@ -149,14 +146,6 @@ export default function Osc({ oscType, scaleNotes, bpm, scale, loopStatus, metro
       stopAll();
     }
   }
-
-
-
-
-
-
-
-
 
 
   //MAIN PLAY
@@ -539,9 +528,9 @@ export default function Osc({ oscType, scaleNotes, bpm, scale, loopStatus, metro
   //PLAY/STOP BUTTON
   useEffect(() => {
     if(isPlaying === false){
-      setPlayStopText("PLAY")
+      setPlayStopText(playImg)
     }else{
-      setPlayStopText("STOP")
+      setPlayStopText(stopImg)
     }
 
   }, [isPlaying])
@@ -559,128 +548,250 @@ export default function Osc({ oscType, scaleNotes, bpm, scale, loopStatus, metro
       <div
       style={{
         //background: "lightblue",
-        paddingTop:"20px",
+        paddingTop:"30px",
         width: "90%",
         display: "flex",
-        flexDirection: "row",
-        gap: "10px",
-        margin: "0px 10px"
+        flexDirection: "column",
+        alignItems: "center"
       }}>
-        <div className="pad">
-        </div>
-        <div className="pad">
-        </div>
-        <div className="pad">
-        </div>
-        <div className="pad">
-        </div>
-      </div>
-      <div style={{ background: "orange", display: "flex", flexDirection: "column" }}>
-        <div style={{ background: "grey", display: "flex", flexDirection: "column" }}>
+        <div
+        style={{
+          //background: "green",
+          width: "90%",
+          display: "flex",
+          flexDirection: "column",
+          gap: "10px",
+          padding: "25px 25px 150px 25px",
+          border: "3px solid rgba(255,255,255,0.8)",
+          borderRadius: "5px",
+          position: "relative"
+        }}>
+
+          <div
+          style={{
+            //background: "orange",
+            width: "100%",
+            display: "flex",
+            flexDirection: "row",
+            gap: "10px",
+          }}>
+              <div className="pad">
+                <select 
+                style={{
+                  position: "absolute"
+                }} className="selector2" value={firstProgression} onChange={(e) => {setFirstProgression(Number(e.target.value))}}>
+                    <option value="0">I</option>
+                    <option value="1">II</option>
+                    <option value="2">III</option>
+                    <option value="3">IV</option>
+                    <option value="4">V</option>
+                    <option value="5">VI</option>
+                    <option value="6">VII</option>
+                  </select>
+              </div>
+              <div className="pad">
+                <select 
+                style={{
+                  position: "absolute"
+                }} className="selector2" value={secondProgression} onChange={(e) => {setSecondProgression(Number(e.target.value))}}>
+                  <option value="0">I</option>
+                  <option value="1">II</option>
+                  <option value="2">III</option>
+                  <option value="3">IV</option>
+                  <option value="4">V</option>
+                  <option value="5">VI</option>
+                  <option value="6">VII</option>
+                </select>
+              </div>
+
+              <div className="pad">
+                <select 
+                style={{
+                  position: "absolute"
+                }} className="selector2" value={thirdProgression} onChange={(e) => {setThirdProgression(Number(e.target.value))}}>
+                  <option value="0">I</option>
+                  <option value="1">II</option>
+                  <option value="2">III</option>
+                  <option value="3">IV</option>
+                  <option value="4">V</option>
+                  <option value="5">VI</option>
+                  <option value="6">VII</option>
+                </select>
+              </div>
+              <div className="pad">
+                <select 
+                style={{
+                  position: "absolute"
+                }} className="selector2" value={fourthProgression} onChange={(e) => {setFourthProgression(Number(e.target.value))}}>
+                  <option value="0">I</option>
+                  <option value="1">II</option>
+                  <option value="2">III</option>
+                  <option value="3">IV</option>
+                  <option value="4">V</option>
+                  <option value="5">VI</option>
+                  <option value="6">VII</option>
+                </select>
+              </div>
+          </div>
+          <div
+          style={{
+            //background: "orange",
+            width: "100%",
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-around",
+            gap: "10px",
+          }}>
+            
+            <fieldset className="voicingField">
+
+              <select className="selector3" value={choosedVoicing1} onChange={(e) => {setChoosedVoicing1(Number(e.target.value))}}>
+                {filtered1[0].voicing.map((item, index) => {
+                  return(
+                    <option key={index} value={index}>{index + 1}</option>
+                  )
+                })}
+              </select>
+
+              <select className="selector3" value={choosedVoicing2} onChange={(e) => {setChoosedVoicing2(Number(e.target.value))}}>
+                {filtered2[0].voicing.map((item, index) => {
+                  return(
+                    <option key={index} value={index}>{index + 1}</option>
+                  )
+                })}
+              </select>
+
+              <select className="selector3" value={choosedVoicing3} onChange={(e) => {setChoosedVoicing3(Number(e.target.value))}}>
+                {filtered3[0].voicing.map((item, index) => {
+                  return(
+                    <option key={index} value={index}>{index + 1}</option>
+                  )
+                })}
+              </select>
+
+              <select className="selector3" value={choosedVoicing4} onChange={(e) => {setChoosedVoicing4(Number(e.target.value))}}>
+                {filtered4[0].voicing.map((item, index) => {
+                  return(
+                    <option key={index} value={index}>{index + 1}</option>
+                  )
+                })}
+              </select>
+              <legend className="legend"><strong>voicing</strong></legend>
+            </fieldset>
+          </div>
+
+          <div
+          style={{
+            position: "absolute",
+            //background: "orange",
+            //width: "100%",
+            display: "flex",
+            flexDirection: "row",
+            //gap: "10px",
+            bottom: "20px",
+          }}>
+            <div className="row g10">
+              <p>rate:</p>
+              <select className="selector" value={chordRate} onChange={(e) => setchordRate(Number(e.target.value))}>
+                <option value={1}>1x</option>
+                <option value={2}>2x</option>
+                <option value={4}>4x</option>
+              </select>
+            </div>
+
+            <div             
+            style={{
+              paddingLeft: "20px",
+              marginLeft: "10px",
+              borderLeft: "3px solid rgba(255,255,255,0.8)"
+            }} className="row g10">
+              <p>rhythm:</p>
+              <select className="selector" value={rhythmStyle} onChange={(e) => {setRhythmStyle(Number(e.target.value))}}>
+                <option value={0}>basic</option>
+                <option value={1}>jazzy</option>
+                <option value={2}>fancy</option>
+              </select>
+            </div>
+
+            <div             
+            style={{
+              paddingLeft: "20px",
+              marginLeft: "10px",
+              borderLeft: "3px solid rgba(255,255,255,0.8)"
+            }} className="row g10">
+              <p>osc:</p>
+              <select className="selector" onChange={(e) => setOscType(e.target.value)}>
+                <option value="sine">sine</option>
+                <option value="square">square</option>
+                <option value="triangle">triangle</option>
+                <option value="sawtooth">saw</option>
+              </select>
+            </div>
+          </div>
 
           <div 
           style={{
-              display: "flex",
-              flexDirection: "row"
-          }}>
-            <p>progression</p>
-            <select value={firstProgression} onChange={(e) => {setFirstProgression(Number(e.target.value))}}>
-              <option value="0">I</option>
-              <option value="1">II</option>
-              <option value="2">III</option>
-              <option value="3">IV</option>
-              <option value="4">V</option>
-              <option value="5">VI</option>
-              <option value="6">VII</option>
-            </select>
-            <select value={secondProgression} onChange={(e) => {setSecondProgression(Number(e.target.value))}}>
-              <option value="0">I</option>
-              <option value="1">II</option>
-              <option value="2">III</option>
-              <option value="3">IV</option>
-              <option value="4">V</option>
-              <option value="5">VI</option>
-              <option value="6">VII</option>
-            </select>
-            <select value={thirdProgression} onChange={(e) => {setThirdProgression(Number(e.target.value))}}>
-              <option value="0">I</option>
-              <option value="1">II</option>
-              <option value="2">III</option>
-              <option value="3">IV</option>
-              <option value="4">V</option>
-              <option value="5">VI</option>
-              <option value="6">VII</option>
-            </select>
-            <select value={fourthProgression} onChange={(e) => {setFourthProgression(Number(e.target.value))}}>
-              <option value="0">I</option>
-              <option value="1">II</option>
-              <option value="2">III</option>
-              <option value="3">IV</option>
-              <option value="4">V</option>
-              <option value="5">VI</option>
-              <option value="6">VII</option>
-            </select>
-          </div>
-          <div 
-          style={{
-              display: "flex",
-              flexDirection: "row"
-          }}>
-            <p>voicing.......</p>
+            justifyContent: "center",
+            marginTop: "70px",
+            //background: "orange",
+          }} 
+          className="row center">
+            <div 
+            style={{
+              justifyContent: "center",
+              //background: "blue",
+              gap: "50px",
+              width: "350px",
+              padding: "30px 0px",
+              border: "3px solid rgba(255,255,255,0.8)",
+              position: "relative",
+            }} 
+            className="row center">
+
+              <img onClick={() => {playStop(bpm)}} className="play" style={{cursor: "pointer"}} width={100} src={playStopText}></img>
+              <img onClick={randomProgressionFun} className="random" style={{cursor: "pointer"}} width={125} src={randomImg}></img>
 
 
-            <select value={choosedVoicing1} onChange={(e) => {setChoosedVoicing1(Number(e.target.value))}}>
-              {filtered1[0].voicing.map((item, index) => {
-                return(
-                  <option key={index} value={index}>{index + 1}</option>
-                )
-              })}
-            </select>
+              <div
+              style={{
+                width: "60%",
+                height: "10px",
+                background: "rgb(22, 35, 51)",
+                position: "absolute",
+                top: "-5px"
+              }}></div>
+              <div
+              style={{
+                width: "60%",
+                height: "10px",
+                background: "rgb(22, 35, 51)",
+                position: "absolute",
+                bottom: "-5px"
+              }}></div>
 
-            <select value={choosedVoicing2} onChange={(e) => {setChoosedVoicing2(Number(e.target.value))}}>
-              {filtered2[0].voicing.map((item, index) => {
-                return(
-                  <option key={index} value={index}>{index + 1}</option>
-                )
-              })}
-            </select>
+              <div
+              style={{
+                width: "10px",
+                height: "40%",
+                background: "rgb(22, 35, 51)",
+                position: "absolute",
+                left: "-5px"
+              }}></div>
 
-            <select value={choosedVoicing3} onChange={(e) => {setChoosedVoicing3(Number(e.target.value))}}>
-              {filtered3[0].voicing.map((item, index) => {
-                return(
-                  <option key={index} value={index}>{index + 1}</option>
-                )
-              })}
-            </select>
+              <div
+              style={{
+                width: "10px",
+                height: "40%",
+                background: "rgb(22, 35, 51)",
+                position: "absolute",
+                right: "-7px"
+              }}></div>
 
-            <select value={choosedVoicing4} onChange={(e) => {setChoosedVoicing4(Number(e.target.value))}}>
-              {filtered4[0].voicing.map((item, index) => {
-                return(
-                  <option key={index} value={index}>{index + 1}</option>
-                )
-              })}
-            </select>
+            </div>
           </div>
         </div>
-        <div style={{ background: "orange", display: "flex", flexDirection: "row" }}>
-          <select value={chordRate} onChange={(e) => setchordRate(Number(e.target.value))}>
-            <option value={1}>1</option>
-            <option value={2}>2</option>
-            <option value={4}>4</option>
-          </select>
-          <label>rate</label>
-
-          <select value={rhythmStyle} onChange={(e) => {setRhythmStyle(Number(e.target.value))}}>
-            <option value={0}>basic</option>
-            <option value={1}>jazzy</option>
-            <option value={2}>fancy</option>
-          </select>
-          <label>chord rhythm</label>
-
-        </div>
-        <button onClick={randomProgressionFun}>RANDOM PROGRESSION</button>
-        <button onClick={() => {playStop(bpm)}}>{playStopText}</button>
       </div>
+
       <MidiExport exportNotes={newRyhtmProgression} chordRate={chordRate} />
     </div>
   );

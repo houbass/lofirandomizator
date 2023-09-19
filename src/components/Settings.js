@@ -24,8 +24,6 @@ export default function Settings({ tonality, scale, bpm, loopStatus, metronomeSt
     {name: 'D5', freq: 587.3},
     {name: 'D#5', freq: 622.3}]);
 
-  const [oscType, setOscType] = useState("sine");
-
   // Define major and minor scales as an object
   const scales = {
     major: [0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19, 21, 23, 24],
@@ -46,17 +44,7 @@ export default function Settings({ tonality, scale, bpm, loopStatus, metronomeSt
   return (
     <div className="settings">
       
-      <Osc scaleNotes={scaleNotes} oscType={oscType} bpm={bpm} scale={scale} loopStatus={loopStatus} metronomeStatus={metronomeStatus} drumStatus={drumStatus}/>
-
-      <p>osc setting</p>
-      <select onChange={(e) => setOscType(e.target.value)}>
-        <option value="sine">sine</option>
-        <option value="square">square</option>
-        <option value="triangle">triangle</option>
-        <option value="sawtooth">sawtooth</option>
-      </select>
-
-      
+      <Osc scaleNotes={scaleNotes} bpm={bpm} scale={scale} loopStatus={loopStatus} metronomeStatus={metronomeStatus} drumStatus={drumStatus}/>
 
     </div>
   );
