@@ -732,9 +732,9 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
               <p>osc:</p>
               <select className="selector" onChange={(e) => setOscType(e.target.value)}>
                 <option value="sine">sine</option>
-                <option value="square">square</option>
                 <option value="triangle">triangle</option>
                 <option value="sawtooth">saw</option>
+                <option value="square">square</option>
               </select>
             </div>
           </div>
