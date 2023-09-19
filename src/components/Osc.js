@@ -16,21 +16,21 @@ import snareAudio from "./audio/snare.mp3";
 import hihatAudio from "./audio/hihat.mp3";
 
 
-export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatus, drumStatus }) {
+export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatus, drumStatus, tempoClicked }) {
   const { voicing } = Voicing();
   const { rhythm } = Rhythm ();
 
   //PROGRESSION STATES
   const [firstProgression, setFirstProgression] = useState(0);
   const [secondProgression, setSecondProgression] = useState(0);
-  const [thirdProgression, setThirdProgression] = useState(0);
-  const [fourthProgression, setFourthProgression] = useState(0);
+  const [thirdProgression, setThirdProgression] = useState(1);
+  const [fourthProgression, setFourthProgression] = useState(2);
 
   //VOICING STATES
   const [choosedVoicing1, setChoosedVoicing1] = useState(0);
   const [choosedVoicing2, setChoosedVoicing2] = useState(1);
-  const [choosedVoicing3, setChoosedVoicing3] = useState(2);
-  const [choosedVoicing4, setChoosedVoicing4] = useState(0);
+  const [choosedVoicing3, setChoosedVoicing3] = useState(1);
+  const [choosedVoicing4, setChoosedVoicing4] = useState(1);
 
   //OSCILLATOR TYPE STATE
   const [oscType, setOscType] = useState("sine");
@@ -133,15 +133,17 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
         })  
       })
       setNewRyhtmProgression(firstArray);
+
+      return firstArray;
     }
   }
 
 
   //PLAYSTOP
-  function playStop(tempo) {
+  function playStop(tempo, rythm) {
 
     if(isPlaying === false){
-      play(tempo)
+      play(tempo, rythm)
     }else{
       stopAll();
     }
@@ -149,26 +151,26 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
 
 
   //MAIN PLAY
-  function play(tempo) {
+  function play(tempo, rythm) {
 
     const oneBeat = (1000 * 60 / tempo / 1) ;
 
     //IF LOOP ON/OFF
     if(loopStatus === true){
-    playRythm(tempo);
+    playRythm(tempo, rythm);
 
     const thisInterval = setInterval(() => {
-      playRythm(tempo);
+      playRythm(tempo, rythm);
     }, oneBeat * 16 / chordRate)
 
     setAllIntervals([thisInterval]);
     }else{
-      playRythm(tempo);
+      playRythm(tempo, rythm);
     }
   }
 
   //RUN RYTHM PROGRESSION
-  function playRythm(tempo) {
+  function playRythm(tempo, rythm) {
     setIsPlaying(true);
 
     startMetronome(tempo, audioContext);
@@ -176,7 +178,7 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
 
     const beat = 60 / tempo;
     let counter = 0;
-    const thisRhythm = newRyhtmProgression;
+    const thisRhythm = rythm;
     const thisFunctionTimeouts = []
 
     thisRhythm.forEach((item, index) => {  
@@ -216,7 +218,6 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
     }
   }
   
-  console.log(isPlaying);
 
   //METRONOME
   function startMetronome(tempo, audioContext) {
@@ -489,8 +490,17 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
   
   //UPDATE PATTERN 
   useEffect(() => {
-    createRhythmFun()
-  }, [scaleNotes, firstProgression, secondProgression, thirdProgression, fourthProgression, choosedVoicing1, choosedVoicing2, choosedVoicing3, choosedVoicing4, chordRate, rhythmStyle])
+      createRhythmFun();
+
+      if(isPlaying === true){
+        const thisRhythm = createRhythmFun();
+          stopAll();
+          play(bpm, thisRhythm);
+      }else{
+        stopAll();
+      }
+
+  }, [loopStatus, tempoClicked,metronomeStatus, drumStatus ,scaleNotes, firstProgression, secondProgression, thirdProgression, fourthProgression, choosedVoicing1, choosedVoicing2, choosedVoicing3, choosedVoicing4, chordRate, rhythmStyle])
 
 
   // Load the audio file when the component mounts
@@ -748,7 +758,7 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
             }} 
             className="row center">
 
-              <img onClick={() => {playStop(bpm)}} className="play" style={{cursor: "pointer"}} width={100} src={playStopText}></img>
+              <img onClick={() => {playStop(bpm, newRyhtmProgression)}} className="play" style={{cursor: "pointer"}} width={100} src={playStopText}></img>
               <img onClick={randomProgressionFun} className="random" style={{cursor: "pointer"}} width={125} src={randomImg}></img>
 
 

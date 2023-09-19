@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Osc from "./Osc";
 import Notes from "./Notes";
 
-export default function Settings({ tonality, scale, bpm, loopStatus, metronomeStatus, drumStatus }) {
+export default function Settings({ tonality, scale, bpm, loopStatus, metronomeStatus, drumStatus, tempoClicked }) {
   const { notes } = Notes();
 
   const [scaleNotes, setScaleNotes] = useState([
@@ -44,7 +44,7 @@ export default function Settings({ tonality, scale, bpm, loopStatus, metronomeSt
   return (
     <div className="settings">
       
-      <Osc scaleNotes={scaleNotes} bpm={bpm} scale={scale} loopStatus={loopStatus} metronomeStatus={metronomeStatus} drumStatus={drumStatus}/>
+      <Osc scaleNotes={scaleNotes} bpm={bpm} scale={scale} loopStatus={loopStatus} metronomeStatus={metronomeStatus} drumStatus={drumStatus} tempoClicked={tempoClicked}/>
 
     </div>
   );

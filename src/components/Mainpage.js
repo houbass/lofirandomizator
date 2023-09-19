@@ -27,9 +27,10 @@ export default function Mainpage() {
     const [drumOpacity, setDrumOpacity] = useState("1");
 
     //TONALITY & SCALE & BPM STATES
-    const [tonality, setTonality] = useState(0);
+    const [tonality, setTonality] = useState(3);
     const [scale, setScale] = useState("major"); // Store the scale type as a string
     const [bpm, setBpm] = useState(70);
+    const [tempoClicked, setTempoClicked] = useState(false);
 
 
 
@@ -170,6 +171,7 @@ export default function Mainpage() {
                                 max="140"
                                 step="1"
                                 onChange={(e) => setBpm(Number(e.target.value))}
+                                onClick={() => {setTempoClicked(!tempoClicked)}}
                             ></input>
 
                         </div>
@@ -180,7 +182,7 @@ export default function Mainpage() {
             </div>
 
 
-            <Settings tonality={tonality} scale={scale} bpm={bpm} loopStatus={loopStatus} metronomeStatus={metronomeStatus} drumStatus={drumStatus}/>
+            <Settings tonality={tonality} scale={scale} bpm={bpm} loopStatus={loopStatus} metronomeStatus={metronomeStatus} drumStatus={drumStatus} tempoClicked={tempoClicked}/>
 
         </div>
         </>
