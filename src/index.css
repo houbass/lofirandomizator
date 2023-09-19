@@ -4,7 +4,7 @@
 }
 
 :root {
-    background: rgb(53, 51, 59)
+    background: rgb(41, 58, 78);
 }
 
 p, h1, h2, h3, h4, h5 {
@@ -27,7 +27,6 @@ p, h1, h2, h3, h4, h5 {
     max-width: 1000px;
     border: none;
     position: absolute;
-
 }
 
 .backgroundPic {
@@ -61,15 +60,6 @@ p, h1, h2, h3, h4, h5 {
 }
 
 
-.pad2 {
-    background-image: radial-gradient( rgb(184, 181, 48),  rgb(211, 100, 146));
-
-    transition: background-image 1s linear;
-}
-.pad2:hover{
-    background-image: radial-gradient(rgb(230, 127, 170), rgb(231, 228, 46) );
-
-}
 
 .pad {
     position: relative;
@@ -212,7 +202,7 @@ p, h1, h2, h3, h4, h5 {
 }
 
 .selector2 {
-    background: transparent;
+    background: rgba(255,255,255,0.5);
     border: none;
     color: black;
     padding: 5px;
