@@ -1,10 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 
 //COMPONENTS
 import MidiExport from "./MidiExport";
 import Voicing from "./Voicing";
 import Rhythm from "./Rhythm";
+
+//audio
+import kickAudio from "./audio/kick.mp3";
+import snareAudio from "./audio/snare.mp3";
+import hihatAudio from "./audio/hihat.mp3";
+
 
 export default function Osc({ oscType, scaleNotes, bpm, scale }) {
   const { voicing } = Voicing();
@@ -36,6 +42,15 @@ export default function Osc({ oscType, scaleNotes, bpm, scale }) {
   const [rhythmStyle, setRhythmStyle] = useState(0);
   const [newRyhtmProgression, setNewRyhtmProgression] = useState();
 
+  //DRUMS
+  const [audioContext, setAudioContext] = useState(null);
+  const [audioBuffer, setAudioBuffer] = useState([]);
+
+  //TIMEOUTS AND INTERVALS
+  const [chordTimeouts, setChordTimeouts] = useState([]);
+  const [metronomeTimeouts, setMetronomeTimeouts] = useState([]);
+  const [drumTimeouts, setDrumTimeouts] = useState([]);
+  const [allIntervals, setAllIntervals] = useState([]);
 
   //RANDOM PROGRESSION AND VOICING
   function randomProgressionFun() {
@@ -105,17 +120,58 @@ export default function Osc({ oscType, scaleNotes, bpm, scale }) {
   }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+  function play(tempo) {
+
+    const oneBeat = (1000 * 60 / tempo / 1) ;
+
+    //IF LOOP
+    playRythm(tempo);
+
+    const thisInterval = setInterval(() => {
+      playRythm(tempo);
+    }, oneBeat * 16 / chordRate)
+
+    setAllIntervals([thisInterval]);
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   //RUN RYTHM PROGRESSION
-function playRythm(tempo) {
+  function playRythm(tempo) {
     console.log("START")
 
-    const audioContext = new AudioContext() || window.webkitAudioContext();
-
     startMetronome(tempo, audioContext);
+    startDrums(tempo, audioContext);
 
     const beat = 60 / tempo;
     let counter = 0;
     const thisRhythm = newRyhtmProgression;
+    const thisFunctionTimeouts = []
 
     thisRhythm.forEach((item, index) => {  
       const duration = item[0].duration;
@@ -131,13 +187,17 @@ function playRythm(tempo) {
       
       counter = counter + waitMs;
 
-      setTimeout(() => {
+      const thisTimeout = setTimeout(() => {
           startOsc(tempo, item, duration, audioContext);
       },  counter / chordRate );
+
+
+      thisFunctionTimeouts.push(thisTimeout);
 
       counter = counter + durationMs;
     })
 
+    setChordTimeouts(thisFunctionTimeouts)
 
     setTimeout(() => {
       console.log("STOP")
@@ -152,26 +212,127 @@ function playRythm(tempo) {
     const oneBeat = (1000 * 60 / tempo / 1) ;
     const click = 0.075
 
+    const thisFunctionTimeouts = [];
+
     for(let i=0; i < (16 / chordRate); i++){
 
-      setTimeout(() => {
-          //const audioContext = new AudioContext() || window.webkitAudioContext();
+      const thisTimeout = setTimeout(() => {
           const o = audioContext.createOscillator();
           const g = audioContext.createGain();
           o.type = "sine";
           o.frequency.value = 630;
+
+          g.gain.setValueAtTime(0, audioContext.currentTime); // Initial amplitude is 0.
+          g.gain.linearRampToValueAtTime(0.25, audioContext.currentTime + 0.01); // Increase amplitude to 1 over 0.5 seconds.
+          g.gain.linearRampToValueAtTime(0,audioContext.currentTime + click);
+
           o.connect(g);
           g.connect(audioContext.destination);
-
-          g.gain.value = 0.05;
-          //g.gain.linearRampToValueAtTime(0.05, click / 4);
-          g.gain.linearRampToValueAtTime(0,audioContext.currentTime + click);
         
           o.start(audioContext.currentTime);
           o.stop(audioContext.currentTime + click);  
-        }, oneBeat * i)
+
+      }, oneBeat * i)
+
+      thisFunctionTimeouts.push(thisTimeout);
     }
+
+    setMetronomeTimeouts(thisFunctionTimeouts);
   }
+
+  //START DRUMS
+  function startDrums(tempo, audioContext) {
+    const oneBeat = (1000 * 60 / tempo / 1) ;
+
+    const thisFunctionTimeouts = []
+
+    //KICK
+    for(let i=0; i < (8 / chordRate); i++){
+      //DIFFERENT DELAY FOR EVERY SECOND HIT
+      const velocityState = i % 2;
+      let delay;
+          
+      if(velocityState > 0){
+        delay = oneBeat / 2;
+      }else{
+        delay = 0;
+      }
+
+      const thisTimeout = setTimeout(() => {        
+        const kick = audioContext.createBufferSource();
+        kick.buffer = audioBuffer[0];
+
+        const g = audioContext.createGain();
+
+        g.gain.setValueAtTime(0, audioContext.currentTime); // Initial amplitude is 0.
+        g.gain.linearRampToValueAtTime(1.2, audioContext.currentTime + 0.06); // Increase amplitude to 1 over 0.5 seconds.
+
+        kick.connect(g);
+        g.connect(audioContext.destination);
+
+        kick.start(audioContext.currentTime);
+      },  (2 * oneBeat * i) + delay)
+
+      thisFunctionTimeouts.push(thisTimeout);
+    }
+
+    //SNARE
+    for(let i=0; i < (8 / chordRate); i++){
+      const thisTimeout = setTimeout(() => {        
+        const snare = audioContext.createBufferSource();
+        snare.buffer = audioBuffer[1];
+
+        const g = audioContext.createGain();
+
+        g.gain.setValueAtTime(0, audioContext.currentTime); // Initial amplitude is 0.
+        g.gain.linearRampToValueAtTime(1, audioContext.currentTime + 0.06); // Increase amplitude to 1 over 0.5 seconds.
+
+        snare.connect(g);
+        g.connect(audioContext.destination);
+
+        snare.start(audioContext.currentTime);        
+      },  (2 * oneBeat * i) + oneBeat)
+
+      thisFunctionTimeouts.push(thisTimeout);
+    }
+
+    //HIHAT
+    for(let i=0; i < (32 / chordRate); i++){
+      const thisTimeout = setTimeout(() => {
+
+        //DIFFERENT VELOCITY FOR EVERY SECOND HIT
+        const velocityState = i % 2;
+        let velocity;
+        
+        if(velocityState > 0){
+          velocity = 0.5;
+        }else{
+          velocity = 1;
+        }
+        
+        const hihat = audioContext.createBufferSource();
+        hihat.buffer = audioBuffer[2];
+
+        const g = audioContext.createGain();
+
+        g.gain.setValueAtTime(0, audioContext.currentTime); // Initial amplitude is 0.
+        g.gain.linearRampToValueAtTime(velocity, audioContext.currentTime + 0.06); // Increase amplitude to 1 over 0.5 seconds.
+
+        hihat.connect(g);
+        g.connect(audioContext.destination);
+
+        hihat.start(audioContext.currentTime);
+
+
+      }, oneBeat * i / 2)
+
+      thisFunctionTimeouts.push(thisTimeout);
+    }
+
+    setDrumTimeouts(thisFunctionTimeouts);
+  }
+
+
 
   //PLAY OSCILATOR
   function startOsc(tempo, currentChordNotes, duration, audioContext) {
@@ -189,14 +350,15 @@ function playRythm(tempo) {
       o.connect(g);
       g.connect(audioContext.destination);
 
-      g.gain.value = 0.05;
-      g.gain.linearRampToValueAtTime(0.05,audioContext.currentTime + oneBeat / 2);
+      g.gain.setValueAtTime(0, audioContext.currentTime); // Initial amplitude is 0.
+      g.gain.linearRampToValueAtTime(0.08, audioContext.currentTime + 0.001); // Increase amplitude to 1 over 0.5 seconds.
       g.gain.linearRampToValueAtTime(0, audioContext.currentTime + oneBeat);
 
       o.start(audioContext.currentTime);
       o.stop( audioContext.currentTime + oneBeat);  
     })
   }
+
 
 
   //VOICING FUNCTION
@@ -275,10 +437,77 @@ function playRythm(tempo) {
     return filteredNew[0]
   }
 
+
+  //STOP ALL
+  function stopAll() {
+    //clear chord timeouts
+    chordTimeouts.forEach((item, index) => {
+      clearTimeout(item);
+    })
+
+    //clear metronome timeouts
+    metronomeTimeouts.forEach((item, index) => {
+      clearTimeout(item);
+    })
+
+    //clear drum timeouts
+    drumTimeouts.forEach((item, index) => {
+      clearTimeout(item);
+    })
+
+    //clear interval
+    allIntervals.forEach((item, index) => {
+      clearInterval(item);
+    })
+
+    //reset timeouts & intervals
+    setChordTimeouts([]);
+    setMetronomeTimeouts([]);
+    setDrumTimeouts([]);
+    setAllIntervals([]);
+
+  }
+
+  console.log(allIntervals)
+
+  
   //UPDATE PATTERN 
   useEffect(() => {
     createRhythmFun()
   }, [scaleNotes, firstProgression, secondProgression, thirdProgression, fourthProgression, choosedVoicing1, choosedVoicing2, choosedVoicing3, choosedVoicing4, chordRate, rhythmStyle])
+
+
+  // Load the audio file when the component mounts
+  useEffect(() => {
+    async function fetchAudioData() {
+      try {
+        const context = new (window.AudioContext || window.webkitAudioContext)();
+
+        //KICK
+        const kickResponse = await fetch(kickAudio);
+        const kickAudioData = await kickResponse.arrayBuffer();
+        const kickBuffer = await context.decodeAudioData(kickAudioData);
+        //SNARE
+        const snareResponse = await fetch(snareAudio);   
+        const snareAudioData = await snareResponse.arrayBuffer();     
+        const snareBuffer = await context.decodeAudioData(snareAudioData);
+
+        //HI HAT
+        const hihatResponse = await fetch(hihatAudio);
+        const hihatData = await hihatResponse.arrayBuffer();
+        const hiHatBuffer = await context.decodeAudioData(hihatData);
+
+        setAudioContext(context);
+        setAudioBuffer([kickBuffer, snareBuffer ,hiHatBuffer]);
+
+      } catch (error) {
+        console.error('Error loading audio:', error);
+      }
+    };
+
+    fetchAudioData();
+  }, []);
+
 
 
   return (
@@ -406,6 +635,8 @@ function playRythm(tempo) {
         </div>
         <button onClick={randomProgressionFun}>RANDOM PROGRESSION</button>
         <button onClick={() => {playRythm(bpm)}}>play</button>
+        <button onClick={() => {play(bpm)}}>play LOOP</button>
+        <button onClick={stopAll}>STOP ALL</button>
       </div>
       <MidiExport exportNotes={newRyhtmProgression} chordRate={chordRate} />
     </div>
