@@ -1,10 +1,10 @@
-
+import { useState } from "react";
 
 //pic
-import { useState } from "react";
 import backgroundPic from "./pic/background.webp";
-import metronome from "./pic/metronome.svg";
-import drums from "./pic/drums.svg";
+import metronomeImg from "./pic/metronome.svg";
+import drumsImg from "./pic/drums.svg";
+import loopImg from "./pic/loop.svg";
 
 //components
 import Settings from "./Settings";
@@ -14,9 +14,58 @@ import Notes from "./Notes";
 export default function Mainpage() {
     const { tonalities } = Notes();
 
+    //LOOP STATES
+    const [loopStatus, setLoopStatus] = useState(true);
+    const [loopOpacity, setLoopOpacity] = useState("1");
+
+    //METRONOME STATES
+    const [metronomeStatus, setMetronomeStatus] = useState(false);
+    const [metronomeOpacity, setMetronomeOpacity] = useState("0.5");
+
+    //DRUM STATES
+    const [drumStatus, setDrumStatus] = useState(true);
+    const [drumOpacity, setDrumOpacity] = useState("1");
+
+    //TONALITY & SCALE & BPM STATES
     const [tonality, setTonality] = useState(0);
     const [scale, setScale] = useState("major"); // Store the scale type as a string
     const [bpm, setBpm] = useState(70);
+
+
+
+    //HANDLERS
+    //loop handler
+    function loopHandler() {
+        if(loopStatus === true){
+            setLoopStatus(false);
+            setLoopOpacity("0.5");
+        }else{
+            setLoopStatus(true);
+            setLoopOpacity("1");
+        }
+    }
+
+    //metronome handler
+    function metronomeHandler() {
+        if(metronomeStatus === true) {
+            setMetronomeStatus(false);
+            setMetronomeOpacity("0.5");
+        }else{
+            setMetronomeStatus(true);
+            setMetronomeOpacity("1");
+        }
+    }
+
+    //drum handler
+    function drumHandler() {
+        if(drumStatus === true){
+            setDrumStatus(false);
+            setDrumOpacity("0.5");
+        }else{
+            setDrumStatus(true);
+            setDrumOpacity("1");
+        }
+    }
 
     return(
         <>
@@ -27,17 +76,41 @@ export default function Mainpage() {
                 <div 
                 style={{
                     position: "absolute",
-                    top: "20px",
-                    right: "30px",
-                    //background: "orange",
-                    width: "70px",
+                    top: "0px",
+                    backgroundImage: "linear-gradient(to top,rgba(22, 35, 51,0.0), rgba(22, 35, 51,1) )",
+                    width: "100%",
+                    height: "120px",
                     display: "flex",
                     flexDirection: "row",
-                    justifyContent: "space-between"
+                    justifyContent: "space-between",
+                    borderRadius: "40px 40px 0px 0px",
                 }}>
-                    <img style={{opacity: 0.5, cursor: "pointer"}} src={metronome} width={30}></img>
-                    <img style={{opacity: 1, cursor: "pointer"}} src={drums} width={30}></img>
+                    <div 
+                    style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        paddingLeft: "30px",
+                        height:"fit-content",
+                        paddingTop: "30px"
+                    }}>
+                        <img onClick={loopHandler} style={{opacity: loopOpacity, cursor: "pointer"}} src={loopImg} width={35}></img>
+                    </div>
+
+                    <div 
+                    style={{
+                        width: "95px",
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        paddingRight: "30px",
+                        height:"fit-content",
+                        paddingTop: "30px"
+                    }}>
+                        <img onClick={metronomeHandler} style={{opacity: metronomeOpacity, cursor: "pointer"}} src={metronomeImg} width={35}></img>
+                        <img onClick={drumHandler} style={{opacity: drumOpacity, cursor: "pointer"}} src={drumsImg} width={35}></img>
+                    </div>
                 </div>
+
 
                 <div style={{
                     color: "white",
@@ -107,7 +180,7 @@ export default function Mainpage() {
             </div>
 
 
-            <Settings tonality={tonality} scale={scale} bpm={bpm}/>
+            <Settings tonality={tonality} scale={scale} bpm={bpm} loopStatus={loopStatus} metronomeStatus={metronomeStatus} drumStatus={drumStatus}/>
 
         </div>
         </>
