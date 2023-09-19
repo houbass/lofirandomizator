@@ -500,7 +500,7 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
         stopAll();
       }
 
-  }, [loopStatus, tempoClicked,metronomeStatus, drumStatus ,scaleNotes, firstProgression, secondProgression, thirdProgression, fourthProgression, choosedVoicing1, choosedVoicing2, choosedVoicing3, choosedVoicing4, chordRate, rhythmStyle])
+  }, [oscType, loopStatus, tempoClicked,metronomeStatus, drumStatus ,scaleNotes, firstProgression, secondProgression, thirdProgression, fourthProgression, choosedVoicing1, choosedVoicing2, choosedVoicing3, choosedVoicing4, chordRate, rhythmStyle])
 
 
   // Load the audio file when the component mounts

@@ -171,7 +171,8 @@ export default function Mainpage() {
                                 max="140"
                                 step="1"
                                 onChange={(e) => setBpm(Number(e.target.value))}
-                                onClick={() => {setTempoClicked(!tempoClicked)}}
+                                onClick={() => {setTempoClicked(!tempoClicked)}} 
+                                //onClickCapture={}
                             ></input>
 
                         </div>
