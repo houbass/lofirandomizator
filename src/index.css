@@ -37,6 +37,8 @@ p, h1, h2, h3, h4, h5 {
 .settings {
     border: none;
     background: rgb(22, 35, 51);
+    border-radius: 0px 0px 40px 40px;
+    margin-bottom: 100px;
 }
 
 .firstSettingContainer{
@@ -156,8 +158,6 @@ p, h1, h2, h3, h4, h5 {
   }
 
 
-
-
   .row {
     display: flex;
     flex-direction: row;
@@ -167,8 +167,8 @@ p, h1, h2, h3, h4, h5 {
   .col{
     display: flex;
     flex-direction: column;
+    align-items: center;
   }
-
 
   .g10{
     gap: 10px;
@@ -177,11 +177,6 @@ p, h1, h2, h3, h4, h5 {
   .g20{
     gap: 20px;
   }
-
-
-
-
-
 
 
 .selector {
@@ -235,7 +230,6 @@ p, h1, h2, h3, h4, h5 {
     outline: none;
 
   }
-
 
   
   .slider::-webkit-slider-thumb {

@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import playImg from "./pic/play.svg";
 import stopImg from "./pic/stop.svg";
 import randomImg from "./pic/random.svg";
+import likeImg from "./pic/like.svg";
+import saveImg from "./pic/save.svg";
 
 //COMPONENTS
 import MidiExport from "./MidiExport";
@@ -62,12 +64,21 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
   const [drumTimeouts, setDrumTimeouts] = useState([]);
   const [allIntervals, setAllIntervals] = useState([]);
 
+  //ACTUAL OSC FOR STOP
+  const [actualOscs, setActualOscs] = useState([]);
+
   //IS PLAYING STATES
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPlayingTimeout, setIsPlayingTimeout] = useState([]);
   
   //PLAY/STOP BUTTON STATES
   const [playStopText, setPlayStopText] = useState(playImg);
+
+  //GENERATED MIDI DATA
+  const [downloadMidiData, setDownloadMidiData] = useState();
+
+  //SAVES
+  const [saves, setSaves] = useState([]);
 
   //RANDOM PROGRESSION AND VOICING
   function randomProgressionFun() {
@@ -357,6 +368,8 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
 
     const velocity = [0.1, 0.3, 0.3, 0.3];
     const oneBeat = (4 * 60 / tempo / duration) / chordRate ;
+
+    let thisOscs = [];
   
     currentChordNotes.forEach((item, index) => {
       const o = audioContext.createOscillator();
@@ -374,9 +387,12 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
 
       o.start(audioContext.currentTime);
       o.stop( audioContext.currentTime + oneBeat);  
-    })
-  }
 
+      thisOscs.push(o);
+    })
+
+    setActualOscs(thisOscs);
+  }
 
   //VOICING FUNCTION
   //GET LETTER OF EACH CHORD IN PROGRESSION
@@ -477,6 +493,11 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
       clearInterval(item);
     })
 
+    //stop actual oscillators
+    actualOscs.forEach((item, index) => {
+      item.stop(audioContext.currentTime);
+    })
+
     //reset timeouts & intervals
     setChordTimeouts([]);
     setMetronomeTimeouts([]);
@@ -487,6 +508,26 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
     
 
   }
+
+
+  //SAVES
+  function saveIt() {
+
+    const thisSave = {
+      name: "save",
+      data: newRyhtmProgression,
+      midi: downloadMidiData,
+      bpm: bpm,
+    }
+
+    setSaves([
+      ...saves, thisSave
+    ])
+  }
+
+console.log(saves);
+
+
   
   //UPDATE PATTERN 
   useEffect(() => {
@@ -552,7 +593,7 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-      color:"white"
+      color:"white",
   }}>
 
       <div
@@ -562,7 +603,8 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
         width: "90%",
         display: "flex",
         flexDirection: "column",
-        alignItems: "center"
+        alignItems: "center",
+        marginBottom: "70px"
       }}>
         <div
         style={{
@@ -571,11 +613,46 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
           display: "flex",
           flexDirection: "column",
           gap: "10px",
-          padding: "25px 25px 150px 25px",
+          padding: "50px 25px 150px 25px",
           border: "3px solid rgba(255,255,255,0.8)",
           borderRadius: "5px",
-          position: "relative"
+          position: "relative",
+          alignItems: "center"
         }}>
+
+          <div 
+          style={{
+            justifyContent: "center",
+            //marginTop: "70px",
+            background: "rgb(22, 35, 51)",
+            position: "absolute",
+            top: "-22px",
+            zIndex: "3"
+          }} 
+          className="row center">
+            <div 
+            style={{
+              justifyContent: "space-around",
+              //background: "blue",
+              //gap: "20px",
+              width: "250px",
+              //padding: "30px 0px",
+
+            }} 
+            className="row center">
+
+              <img onClick={() => {playStop(bpm, newRyhtmProgression)}} className="play" style={{cursor: "pointer"}} width={30} src={playStopText}></img>
+              <img onClick={randomProgressionFun} className="random" style={{cursor: "pointer"}} width={40} src={randomImg}></img>
+              <img onClick={saveIt} className="play" style={{cursor: "pointer"}} width={40} src={likeImg}></img>
+              <a href={downloadMidiData} download><img className="random" style={{cursor: "pointer"}} width={30} src={saveImg}></img></a>
+            </div>
+          </div>
+
+
+
+
+
+
 
           <div
           style={{
@@ -700,8 +777,8 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
             //gap: "10px",
             bottom: "20px",
           }}>
-            <div className="row g10">
-              <p>rate:</p>
+            <div className="col g10">
+              <p>rate</p>
               <select className="selector" value={chordRate} onChange={(e) => setchordRate(Number(e.target.value))}>
                 <option value={1}>1x</option>
                 <option value={2}>2x</option>
@@ -711,11 +788,11 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
 
             <div             
             style={{
-              paddingLeft: "20px",
+              paddingLeft: "10px",
               marginLeft: "10px",
               borderLeft: "3px solid rgba(255,255,255,0.8)"
-            }} className="row g10">
-              <p>rhythm:</p>
+            }} className="col g10">
+              <p>rhythm</p>
               <select className="selector" value={rhythmStyle} onChange={(e) => {setRhythmStyle(Number(e.target.value))}}>
                 <option value={0}>basic</option>
                 <option value={1}>jazzy</option>
@@ -725,11 +802,11 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
 
             <div             
             style={{
-              paddingLeft: "20px",
+              paddingLeft: "10px",
               marginLeft: "10px",
               borderLeft: "3px solid rgba(255,255,255,0.8)"
-            }} className="row g10">
-              <p>osc:</p>
+            }} className="col g10">
+              <p>osc</p>
               <select className="selector" onChange={(e) => setOscType(e.target.value)}>
                 <option value="sine">sine</option>
                 <option value="triangle">triangle</option>
@@ -739,70 +816,58 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
             </div>
           </div>
 
-          <div 
-          style={{
-            justifyContent: "center",
-            marginTop: "70px",
-            //background: "orange",
-          }} 
-          className="row center">
-            <div 
-            style={{
-              justifyContent: "center",
-              //background: "blue",
-              gap: "50px",
-              width: "350px",
-              padding: "30px 0px",
-              border: "3px solid rgba(255,255,255,0.8)",
-              position: "relative",
-            }} 
-            className="row center">
 
-              <img onClick={() => {playStop(bpm, newRyhtmProgression)}} className="play" style={{cursor: "pointer"}} width={100} src={playStopText}></img>
-              <img onClick={randomProgressionFun} className="random" style={{cursor: "pointer"}} width={125} src={randomImg}></img>
-
-
-              <div
-              style={{
-                width: "60%",
-                height: "10px",
-                background: "rgb(22, 35, 51)",
-                position: "absolute",
-                top: "-5px"
-              }}></div>
-              <div
-              style={{
-                width: "60%",
-                height: "10px",
-                background: "rgb(22, 35, 51)",
-                position: "absolute",
-                bottom: "-5px"
-              }}></div>
-
-              <div
-              style={{
-                width: "10px",
-                height: "40%",
-                background: "rgb(22, 35, 51)",
-                position: "absolute",
-                left: "-5px"
-              }}></div>
-
-              <div
-              style={{
-                width: "10px",
-                height: "40%",
-                background: "rgb(22, 35, 51)",
-                position: "absolute",
-                right: "-7px"
-              }}></div>
-
-            </div>
-          </div>
         </div>
       </div>
 
-      <MidiExport exportNotes={newRyhtmProgression} chordRate={chordRate} />
+      <div 
+      style={{
+        //background: "orange",
+        width: "100%",
+        //height: "50px",
+        marginTop: "30px",
+        display: "flex",
+        flexDirection: "column-reverse",
+        alignItems: "cemter",
+        gap: "5px"
+      }}>
+        {saves.map((item, index) => {
+
+          const check = index % 2;
+          let background;
+          if(check > 0){
+            background = "rgb(22, 35, 51)";
+          }else{
+            background = "rgb(22, 55, 71)";
+          }
+
+
+          return(
+            <div 
+            key={index} 
+            className="row" 
+            style={{
+              background: background,
+              justifyContent: "space-between",
+              padding: "5px"
+            }}>
+              <div className="row g20">
+                <p>#{index}</p>
+                <p>{item.bpm}BPM</p>
+              </div>
+              <div className="row g20">
+                <button onClick={() => {setSaves(saves.filter((item2, index2) => {if(index2 === index){return}else{return item2}}))}}>delete</button>
+                <a href={item.midi}>download</a>
+                <button onClick={() => {playStop(item.bpm, item.data)}}>play</button>
+              </div>
+            </div>
+          )
+        })}
+
+
+      </div>
+
+      <MidiExport exportNotes={newRyhtmProgression} chordRate={chordRate} setDownloadMidiData={setDownloadMidiData}/>
     </div>
   );
 }
