@@ -74,6 +74,8 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
   
   //PLAY/STOP BUTTON STATES
   const [playStopText, setPlayStopText] = useState(playImg);
+  const [showPlayPad, setShowPlayPad] = useState([0, 0, 0, 0]);
+  const [showPlayPadTimeouts, setShowPlayPadTimeouts] = useState([]);
 
   //GENERATED MIDI DATA
   const [downloadMidiData, setDownloadMidiData] = useState();
@@ -156,12 +158,11 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
   function playStop(tempo, rythm) {
 
     if(isPlaying === false){
-      play(tempo, rythm)
+      play(tempo, rythm);
     }else{
       stopAll();
     }
   }
-
 
   //MAIN PLAY
   function play(tempo, rythm) {
@@ -170,15 +171,60 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
 
     //IF LOOP ON/OFF
     if(loopStatus === true){
-    playRythm(tempo, rythm);
-
-    const thisInterval = setInterval(() => {
       playRythm(tempo, rythm);
-    }, oneBeat * 16 / chordRate)
+      playAnimation(oneBeat)
 
-    setAllIntervals([thisInterval]);
+      const thisInterval = setInterval(() => {
+        playRythm(tempo, rythm);
+        playAnimation(oneBeat);
+      }, oneBeat * 16 / chordRate)
+
+      setAllIntervals([thisInterval]);
     }else{
       playRythm(tempo, rythm);
+      playAnimation(oneBeat)
+    }
+  }
+
+  console.log(showPlayPad)
+  //playanimation
+  function playAnimation(oneBeat) {
+
+    const step = oneBeat * 4 / chordRate;
+
+    for(let i = 0; i < 4; i++){
+      const thisTimeout = setTimeout(() => {
+
+        switch(i){
+          case 0:
+            showPlayPad[0] = 1;
+            showPlayPad[1] = 0;
+            showPlayPad[2] = 0;
+            showPlayPad[3] = 0;
+            break;
+          case 1:
+              showPlayPad[0] = 0;
+              showPlayPad[1] = 1;
+              showPlayPad[2] = 0;
+              showPlayPad[3] = 0;
+              break;
+          case 2:
+              showPlayPad[0] = 0;
+              showPlayPad[1] = 0;
+              showPlayPad[2] = 1;
+              showPlayPad[3] = 0;
+              break;
+          case 3:
+              showPlayPad[0] = 0;
+              showPlayPad[1] = 0;
+              showPlayPad[2] = 0;
+              showPlayPad[3] = 1;
+              break;
+        }
+      }, step * i)
+
+      //delete time out then
+      setShowPlayPadTimeouts([thisTimeout])
     }
   }
 
@@ -490,6 +536,11 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
       clearTimeout(item);
     })
 
+    //clear play animation timeouts
+    showPlayPadTimeouts.forEach((item, index) => {
+      clearTimeout(item);
+    })
+
     //clear interval
     allIntervals.forEach((item, index) => {
       clearInterval(item);
@@ -507,6 +558,7 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
     setAllIntervals([]);
     setIsPlayingTimeout([]);
     setIsPlaying(false);
+    //setShowPlayPad([0,0,0,0]);
   }
 
   function getSaveProgression(input) {
@@ -615,7 +667,8 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
   //PLAY/STOP BUTTON
   useEffect(() => {
     if(isPlaying === false){
-      setPlayStopText(playImg)
+      setPlayStopText(playImg);
+      setShowPlayPad([0,0,0,0]);
     }else{
       setPlayStopText(stopImg)
     }
@@ -692,7 +745,7 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
             flexDirection: "row",
             gap: "10px",
           }}>
-              <div className="pad">
+              <div className="pad" style={{pointerEvents: "all"}}>
                 <select 
                 style={{
                   position: "absolute"
@@ -705,6 +758,10 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
                     <option value="5">VI</option>
                     <option value="6">VII</option>
                   </select>
+
+                <div style={{opacity: String(showPlayPad[0])}} className="pad2">
+                </div>
+
               </div>
               <div className="pad">
                 <select 
@@ -719,6 +776,8 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
                   <option value="5">VI</option>
                   <option value="6">VII</option>
                 </select>
+                <div style={{opacity: showPlayPad[1]}} className="pad2">
+                </div>
               </div>
 
               <div className="pad">
@@ -734,6 +793,9 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
                   <option value="5">VI</option>
                   <option value="6">VII</option>
                 </select>
+
+                <div style={{opacity: showPlayPad[2]}} className="pad2">
+                </div>
               </div>
               <div className="pad">
                 <select 
@@ -748,6 +810,9 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
                   <option value="5">VI</option>
                   <option value="6">VII</option>
                 </select>
+
+                <div style={{opacity: showPlayPad[3]}} className="pad2">
+                </div>
               </div>
           </div>
           <div
@@ -884,12 +949,11 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
               height: "30px",
             }}>
               <div className="row g10">
-                <p className="w1">#{index}</p>
                 <p className="w2">{item.tonality}</p>
                 <p className="w3">{item.progression}</p>
                 <p className="w4">{item.bpm}BPM</p>
               </div>
-              <div className="row g20">
+              <div className="row g10">
                 <img onClick={() => {setSaves(saves.filter((item2, index2) => {if(index2 === index){return}else{return item2}}))}} className="random" style={{cursor: "pointer"}} width={25} src={deleteImg}></img>
                 <a href={item.midi} download><img className="random" style={{cursor: "pointer", paddingTop: "5px"}} width={20} src={saveImg}></img></a>
                 <img onClick={() => {playStop(item.bpm, item.data)}} className="play" style={{cursor: "pointer"}} width={20} src={playStopText}></img>
