@@ -242,6 +242,8 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
     const thisRhythm = rythm;
     const thisFunctionTimeouts = []
 
+    const smallDelay = 20; //to do not play in exactly same time as drums
+
     thisRhythm.forEach((item, index) => {  
       const duration = item[0].duration;
       const durationMs = 4 * 1000 * beat / duration;
@@ -258,7 +260,9 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
 
       const thisTimeout = setTimeout(() => {
           startOsc(tempo, item, duration, audioContext);
-      },  counter / chordRate );
+      },  (counter / chordRate)  + smallDelay);
+
+      console.log(smallDelay)
 
 
       thisFunctionTimeouts.push(thisTimeout);
@@ -735,7 +739,7 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
               <img onClick={() => {playStop(bpm, newRyhtmProgression)}} className="play" style={{cursor: "pointer"}} width={30} src={playStopText}></img>
               <img onClick={randomProgressionFun} className="random" style={{cursor: "pointer"}} width={40} src={randomImg}></img>
               <img onClick={saveIt} className="play" style={{cursor: "pointer"}} width={40} src={likeImg}></img>
-              <a href={downloadMidiData} download><img className="random" style={{cursor: "pointer"}} width={30} src={saveImg}></img></a>
+              <a href={downloadMidiData} download><img className="random" style={{cursor: "pointer", paddingTop: "5px"}} width={30} src={saveImg}></img></a>
             </div>
           </div>
 
