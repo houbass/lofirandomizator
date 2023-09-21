@@ -739,9 +739,44 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
               <img onClick={() => {playStop(bpm, newRyhtmProgression)}} className="play" style={{cursor: "pointer"}} width={30} src={playStopText} alt="play/stop" title="play/stop"></img>
               <img onClick={randomProgressionFun} className="random" style={{cursor: "pointer"}} width={40} src={randomImg} alt="random" title="random"></img>
               <img onClick={saveIt} className="play" style={{cursor: "pointer"}} width={40} src={likeImg} alt="favorite" title="favorite"></img>
-              <a href={downloadMidiData} download><img className="random" style={{cursor: "pointer", paddingTop: "5px"}} width={30} src={saveImg} alt="download midi" title="download midi"></img></a>
+              <a 
+              href={downloadMidiData} 
+              download={
+                getChordNames(0).name + "__" + 
+                getSaveProgression(firstProgression) + "-" + 
+                getSaveProgression(secondProgression)  + "-" + 
+                getSaveProgression(thirdProgression)  + "-" + 
+                getSaveProgression(fourthProgression) + ".midi"
+                }>
+                  <img className="random" style={{cursor: "pointer", paddingTop: "5px"}} width={30} src={saveImg} alt="download midi" title="download midi"></img>
+                </a>
             </div>
           </div>
+
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
           <div
           style={{
