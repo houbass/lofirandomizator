@@ -1027,7 +1027,7 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
               </div>
               <div className="row g10">
                 <img onClick={() => {setSaves(saves.filter((item2, index2) => {if(index2 === index){return}else{return item2}}))}} className="random" style={{cursor: "pointer"}} width={25} src={deleteImg} alt="delete" title="delete"></img>
-                <a href={item.midi} download><img className="random" style={{cursor: "pointer", paddingTop: "5px"}} width={20} src={saveImg} alt="download midi" title="download midi"></img></a>
+                <a href={item.midi} download={item.tonality + "__" + item.progression + ".midi"}><img className="random" style={{cursor: "pointer", paddingTop: "5px"}} width={20} src={saveImg} alt="download midi" title="download midi"></img></a>
                 <img onClick={() => {playStop(item.bpm, item.data)}} className="play" style={{cursor: "pointer"}} width={20} src={playStopText} alt="play/stop" title="play/stop"></img>
               </div>
             </div>
