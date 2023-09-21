@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 //pic
 import playImg from "./pic/play.svg";
@@ -6,6 +6,7 @@ import stopImg from "./pic/stop.svg";
 import randomImg from "./pic/random.svg";
 import likeImg from "./pic/like.svg";
 import saveImg from "./pic/save.svg";
+import deleteImg from "./pic/delete.svg";
 
 //COMPONENTS
 import MidiExport from "./MidiExport";
@@ -18,7 +19,7 @@ import snareAudio from "./audio/snare.mp3";
 import hihatAudio from "./audio/hihat.mp3";
 
 
-export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatus, drumStatus, tempoClicked }) {
+export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatus, drumStatus, tempoClicked, tonality }) {
   const { voicing } = Voicing();
   const { rhythm } = Rhythm ();
 
@@ -79,6 +80,7 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
 
   //SAVES
   const [saves, setSaves] = useState([]);
+  const savesRef = useRef();
 
   //RANDOM PROGRESSION AND VOICING
   function randomProgressionFun() {
@@ -505,8 +507,36 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
     setAllIntervals([]);
     setIsPlayingTimeout([]);
     setIsPlaying(false);
-    
+  }
 
+  function getSaveProgression(input) {
+    let number;
+
+    switch(input){
+      case 0: 
+        number = "I";
+        break;
+      case 1: 
+        number = "II";
+        break;
+      case 2: 
+        number = "III";
+        break;
+      case 3: 
+        number = "IV";
+        break;
+      case 4: 
+        number = "V";
+        break;
+      case 5: 
+        number = "VI";
+        break;
+      case 6: 
+        number = "VII";
+        break;
+    }
+
+    return number;
   }
 
 
@@ -518,17 +548,23 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
       data: newRyhtmProgression,
       midi: downloadMidiData,
       bpm: bpm,
+      tonality: getChordNames(0).name,
+      progression: 
+        getSaveProgression(firstProgression) + "-" + 
+        getSaveProgression(secondProgression)  + "-" + 
+        getSaveProgression(thirdProgression)  + "-" + 
+        getSaveProgression(fourthProgression)
     }
 
     setSaves([
       ...saves, thisSave
     ])
+
+    if(saves.length === 0){
+      savesRef.current.scrollIntoView();
+    }
   }
 
-console.log(saves);
-
-
-  
   //UPDATE PATTERN 
   useEffect(() => {
       createRhythmFun();
@@ -647,12 +683,6 @@ console.log(saves);
               <a href={downloadMidiData} download><img className="random" style={{cursor: "pointer"}} width={30} src={saveImg}></img></a>
             </div>
           </div>
-
-
-
-
-
-
 
           <div
           style={{
@@ -821,6 +851,7 @@ console.log(saves);
       </div>
 
       <div 
+      ref={savesRef}
       style={{
         //background: "orange",
         width: "100%",
@@ -849,16 +880,19 @@ console.log(saves);
             style={{
               background: background,
               justifyContent: "space-between",
-              padding: "5px"
+              padding: "5px",
+              height: "30px",
             }}>
-              <div className="row g20">
-                <p>#{index}</p>
-                <p>{item.bpm}BPM</p>
+              <div className="row g10">
+                <p className="w1">#{index}</p>
+                <p className="w2">{item.tonality}</p>
+                <p className="w3">{item.progression}</p>
+                <p className="w4">{item.bpm}BPM</p>
               </div>
               <div className="row g20">
-                <button onClick={() => {setSaves(saves.filter((item2, index2) => {if(index2 === index){return}else{return item2}}))}}>delete</button>
-                <a href={item.midi}>download</a>
-                <button onClick={() => {playStop(item.bpm, item.data)}}>play</button>
+                <img onClick={() => {setSaves(saves.filter((item2, index2) => {if(index2 === index){return}else{return item2}}))}} className="random" style={{cursor: "pointer"}} width={25} src={deleteImg}></img>
+                <a href={item.midi} download><img className="random" style={{cursor: "pointer", paddingTop: "5px"}} width={20} src={saveImg}></img></a>
+                <img onClick={() => {playStop(item.bpm, item.data)}} className="play" style={{cursor: "pointer"}} width={20} src={playStopText}></img>
               </div>
             </div>
           )

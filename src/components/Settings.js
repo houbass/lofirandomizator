@@ -44,7 +44,7 @@ export default function Settings({ tonality, scale, bpm, loopStatus, metronomeSt
   return (
     <div className="settings">
       
-      <Osc scaleNotes={scaleNotes} bpm={bpm} scale={scale} loopStatus={loopStatus} metronomeStatus={metronomeStatus} drumStatus={drumStatus} tempoClicked={tempoClicked}/>
+      <Osc scaleNotes={scaleNotes} bpm={bpm} scale={scale} loopStatus={loopStatus} metronomeStatus={metronomeStatus} drumStatus={drumStatus} tempoClicked={tempoClicked} tonality={tonality}/>
 
     </div>
   );

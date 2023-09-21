@@ -3,6 +3,10 @@
     margin: 0px;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 :root {
     background: rgb(41, 58, 78);
 }
@@ -157,6 +161,26 @@ p, h1, h2, h3, h4, h5 {
     filter: brightness(1.5);
   }
 
+
+  .saves {
+    background: orange;
+  }
+
+  .w1 {
+    width: 25px;
+  }
+
+  .w2 {
+    width: 60px;
+  }
+
+  .w3 {
+    width: 110px;
+  }
+
+  .w4 {
+    width: 60px;
+  }
 
   .row {
     display: flex;
