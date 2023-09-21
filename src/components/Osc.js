@@ -1,5 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 
+//local storage
+import useLocalStorageState from 'use-local-storage-state'
+
 //pic
 import playImg from "./pic/play.svg";
 import stopImg from "./pic/stop.svg";
@@ -19,24 +22,24 @@ import snareAudio from "./audio/snare.mp3";
 import hihatAudio from "./audio/hihat.mp3";
 
 
-export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatus, drumStatus, tempoClicked, tonality }) {
+export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatus, drumStatus, tempoClicked }) {
   const { voicing } = Voicing();
   const { rhythm } = Rhythm ();
 
   //PROGRESSION STATES
-  const [firstProgression, setFirstProgression] = useState(0);
-  const [secondProgression, setSecondProgression] = useState(0);
-  const [thirdProgression, setThirdProgression] = useState(1);
-  const [fourthProgression, setFourthProgression] = useState(2);
+  const [firstProgression, setFirstProgression] = useLocalStorageState('firstProgression', {defaultValue: 0 });
+  const [secondProgression, setSecondProgression] = useLocalStorageState('secondProgression', {defaultValue: 0 });
+  const [thirdProgression, setThirdProgression] = useLocalStorageState('thirdProgression', {defaultValue: 1 });
+  const [fourthProgression, setFourthProgression] = useLocalStorageState('fourthProgression', {defaultValue: 2 });
 
   //VOICING STATES
-  const [choosedVoicing1, setChoosedVoicing1] = useState(0);
-  const [choosedVoicing2, setChoosedVoicing2] = useState(1);
-  const [choosedVoicing3, setChoosedVoicing3] = useState(1);
-  const [choosedVoicing4, setChoosedVoicing4] = useState(1);
+  const [choosedVoicing1, setChoosedVoicing1] = useLocalStorageState('choosedVoicing1', {defaultValue: 0 });
+  const [choosedVoicing2, setChoosedVoicing2] = useLocalStorageState('choosedVoicing2', {defaultValue: 1 });
+  const [choosedVoicing3, setChoosedVoicing3] = useLocalStorageState('choosedVoicing3', {defaultValue: 1 });
+  const [choosedVoicing4, setChoosedVoicing4] = useLocalStorageState('choosedVoicing4', {defaultValue: 1 });
 
   //OSCILLATOR TYPE STATE
-  const [oscType, setOscType] = useState("sine");
+  const [oscType, setOscType] = useLocalStorageState('oscType', {defaultValue: "sine" });
 
   //CHORD NAME STATES
   const [chordname1, setChordname1] = useState("Cmajor");
@@ -51,8 +54,8 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
   const filtered4 = voicing.filter((item) => item.name === chordname4);
 
   //CHORD STATES
-  const [chordRate, setchordRate] = useState(2);
-  const [rhythmStyle, setRhythmStyle] = useState(1);
+  const [chordRate, setchordRate] = useLocalStorageState('chordRate', {defaultValue: 2 });
+  const [rhythmStyle, setRhythmStyle] = useLocalStorageState('rhythmStyle', {defaultValue: 1 });
   const [newRyhtmProgression, setNewRyhtmProgression] = useState();
 
   //DRUM STATES
@@ -81,7 +84,7 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
   const [downloadMidiData, setDownloadMidiData] = useState();
 
   //SAVES
-  const [saves, setSaves] = useState([]);
+  const [saves, setSaves] = useLocalStorageState('saves', {defaultValue: [] });
   const savesRef = useRef();
 
   //RANDOM PROGRESSION AND VOICING
@@ -186,7 +189,6 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
     }
   }
 
-  console.log(showPlayPad)
   //playanimation
   function playAnimation(oneBeat) {
 
@@ -902,7 +904,7 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
               borderLeft: "3px solid rgba(255,255,255,0.8)"
             }} className="col g10">
               <p>osc</p>
-              <select className="selector" onChange={(e) => setOscType(e.target.value)}>
+              <select className="selector" value={oscType} onChange={(e) => setOscType(e.target.value)}>
                 <option value="sine">sine</option>
                 <option value="triangle">triangle</option>
                 <option value="sawtooth">saw</option>
@@ -910,8 +912,6 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
               </select>
             </div>
           </div>
-
-
         </div>
       </div>
 

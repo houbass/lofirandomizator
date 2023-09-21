@@ -1,5 +1,8 @@
 import { useState } from "react";
 
+//local storage
+import useLocalStorageState from 'use-local-storage-state'
+
 //pic
 import backgroundPic from "./pic/background.webp";
 import metronomeImg from "./pic/metronome.svg";
@@ -15,24 +18,22 @@ export default function Mainpage() {
     const { tonalities } = Notes();
 
     //LOOP STATES
-    const [loopStatus, setLoopStatus] = useState(true);
-    const [loopOpacity, setLoopOpacity] = useState("1");
+    const [loopStatus, setLoopStatus] = useLocalStorageState('loopstatus', {defaultValue: true });
+    const [loopOpacity, setLoopOpacity] = useLocalStorageState('loopOpacity', {defaultValue: "1" });
 
     //METRONOME STATES
-    const [metronomeStatus, setMetronomeStatus] = useState(false);
-    const [metronomeOpacity, setMetronomeOpacity] = useState("0.5");
+    const [metronomeStatus, setMetronomeStatus] = useLocalStorageState('metronomeStatus', {defaultValue: false });
+    const [metronomeOpacity, setMetronomeOpacity] = useLocalStorageState('metronomeOpacity', {defaultValue: "0.5" });
 
     //DRUM STATES
-    const [drumStatus, setDrumStatus] = useState(true);
-    const [drumOpacity, setDrumOpacity] = useState("1");
+    const [drumStatus, setDrumStatus] = useLocalStorageState('drumStatus', {defaultValue: true });
+    const [drumOpacity, setDrumOpacity] = useLocalStorageState('drumOpacity', {defaultValue: "1" });
 
     //TONALITY & SCALE & BPM STATES
-    const [tonality, setTonality] = useState(3);
-    const [scale, setScale] = useState("major"); // Store the scale type as a string
-    const [bpm, setBpm] = useState(70);
+    const [tonality, setTonality] = useLocalStorageState('tonality', {defaultValue: 3 });
+    const [scale, setScale] = useLocalStorageState('scale', {defaultValue: "major" });
+    const [bpm, setBpm] = useLocalStorageState('bpm', {defaultValue: 70 });
     const [tempoClicked, setTempoClicked] = useState(false);
-
-
 
     //HANDLERS
     //loop handler
@@ -153,7 +154,7 @@ export default function Mainpage() {
                                 ))}
                             </select>
 
-                            <select className="selector" onChange={(e) => setScale(e.target.value)}>
+                            <select className="selector" value={scale} onChange={(e) => setScale(e.target.value)}>
                                 <option value="major">major</option>
                                 <option value="minor">minor</option>
                             </select>
