@@ -637,6 +637,7 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
 
   }, [oscType, loopStatus, tempoClicked,metronomeStatus, drumStatus ,scaleNotes, firstProgression, secondProgression, thirdProgression, fourthProgression, choosedVoicing1, choosedVoicing2, choosedVoicing3, choosedVoicing4, chordRate, rhythmStyle])
 
+  console.log(getChordNames(firstProgression))
 
   // Load the audio file when the component mounts
   useEffect(() => {
@@ -753,31 +754,6 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
             </div>
           </div>
 
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
           <div
           style={{
             //background: "orange",
@@ -800,6 +776,19 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
                     <option value="6">VII</option>
                   </select>
 
+                  <p 
+                  style={{
+                  position: "absolute",
+                  bottom: "5px",
+                  color: "black",
+                  fontWeight: "bold",
+                  opacity: "0.8",
+                  fontSize: "14px",
+                  zIndex: "3"
+                  }}>
+                    {getChordNames(firstProgression).name}
+                  </p>
+
                 <div style={{opacity: String(showPlayPad[0])}} className="pad2">
                 </div>
 
@@ -817,8 +806,23 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
                   <option value="5">VI</option>
                   <option value="6">VII</option>
                 </select>
+
+                <p 
+                  style={{
+                  position: "absolute",
+                  bottom: "5px",
+                  color: "black",
+                  fontWeight: "bold",
+                  opacity: "0.8",
+                  fontSize: "14px",
+                  zIndex: "3"
+                  }}>
+                    {getChordNames(secondProgression).name}
+                </p>
+
                 <div style={{opacity: showPlayPad[1]}} className="pad2">
                 </div>
+
               </div>
 
               <div className="pad">
@@ -835,8 +839,22 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
                   <option value="6">VII</option>
                 </select>
 
+                <p 
+                  style={{
+                  position: "absolute",
+                  bottom: "5px",
+                  color: "black",
+                  fontWeight: "bold",
+                  opacity: "0.8",
+                  fontSize: "14px",
+                  zIndex: "3"
+                  }}>
+                    {getChordNames(thirdProgression).name}
+                </p>
+
                 <div style={{opacity: showPlayPad[2]}} className="pad2">
                 </div>
+
               </div>
               <div className="pad">
                 <select 
@@ -852,8 +870,23 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
                   <option value="6">VII</option>
                 </select>
 
+                <p 
+                  style={{
+                  position: "absolute",
+                  bottom: "5px",
+                  color: "black",
+                  fontWeight: "bold",
+                  opacity: "0.8",
+                  fontSize: "14px",
+                  zIndex: "3"
+
+                  }}>
+                    {getChordNames(fourthProgression).name}
+                </p>
+
                 <div style={{opacity: showPlayPad[3]}} className="pad2">
                 </div>
+
               </div>
           </div>
           <div
