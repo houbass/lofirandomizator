@@ -975,7 +975,7 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
               marginLeft: "10px",
               borderLeft: "3px solid rgba(255,255,255,0.8)"
             }} className="col g10">
-              <p>osc</p>
+              <p>oscillator</p>
               <select className="selector" value={oscType} onChange={(e) => setOscType(e.target.value)}>
                 <option value="sine">sine</option>
                 <option value="triangle">triangle</option>
