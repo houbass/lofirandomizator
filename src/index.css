@@ -170,21 +170,178 @@ p, h1, h2, h3, h4, h5 {
 
   .random {
     opacity: 0.7;
-    transition: 0.7s;
+    rotate: 0deg;
   }
 
   .random:hover {
     opacity: 1;
   }
 
+  .random-active {
+    opacity: 0.7;
+    rotate: 0deg;
+    animation-name: randomClick;
+    animation-duration: 1s;
+    pointer-events: none;
+  }
+
+
+  @keyframes randomClick {
+    from{
+      rotate: 0deg;
+    }
+    to {
+      rotate: -360deg;
+    }
+  }
+
+  .download {
+    opacity: 0.7;
+    rotate: 0deg;
+  }
+
+  .download:hover {
+    opacity: 1;
+  }
+
+  .download-active {
+    opacity: 0.7;
+    animation-name: downloadClick;
+    animation-duration: 0.5s;
+    pointer-events: none;
+  }
+
+
+  @keyframes downloadClick {
+    0%{
+      scale: 1;
+    }
+    50%{
+      scale: 1.1;
+    }
+    100%{
+      scale: 1;
+    }
+  }
+
+  .likeanimation{
+    position: absolute;
+    left: 59%;
+    animation-name: likeAnim;
+    animation-duration: 2s;
+    animation-fill-mode: forwards;
+  }
+
+  @keyframes likeAnim {
+    0%{
+      top: -15px;
+      opacity: 0;
+    }
+    50%{
+      opacity: 1;
+    }
+    100%{
+      top: -30px;
+      opacity: 0;
+    }
+  }
+
+
+
+
+
+  .play1 {
+    filter: brightness(1);
+    width: 30px;
+    height: 30px;
+  }
+
+  .play1:hover {
+    filter: brightness(1.5);
+  }
+
+  .stop1 {
+    filter: brightness(1);
+    width: 30px;
+    height: 30px;
+    scale: 1;
+  }
+
+  .stop1:hover {
+    filter: brightness(1.5);
+  }
+
   .play {
     filter: brightness(1);
-    transition: 0.7s;
   }
 
   .play:hover {
     filter: brightness(1.5);
+    transition: 0.7s;
   }
+
+  .like {
+    filter: brightness(1);
+  }
+
+  .like:hover {
+    filter: brightness(1.5);
+  }
+
+  .like-active {
+    animation-name: likeAnim2;
+    animation-duration: 0.5s;
+    animation-fill-mode: forwards;
+    pointer-events: none;
+  }
+
+  @keyframes likeAnim2 {
+    0%{
+      scale: 1;
+    }
+    50%{
+      scale: 1.2;
+    }
+    100%{
+      scale: 1;
+    }
+  }
+
+  .playsvg {
+
+  }
+
+
+  .playStopAnim {
+    fill: transparent;
+  }
+
+  .playStopAnim-active {
+    stroke: rgb(34, 228, 89);
+    font-size: 150px;
+    font-family: 'Caveat Brush', cursive;
+    stroke-width: 15px;
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    fill: transparent;
+    animation: dash linear infinite;
+  }
+  
+  
+  @keyframes dash {
+  
+    from {
+      stroke-dashoffset: 1000;
+      stroke: rgb(28, 206, 78);
+    }
+  
+    to {
+      stroke-dashoffset: 500;
+      stroke: rgb(28, 206, 78);
+    }
+   
+  }
+
 
 
   .saves {

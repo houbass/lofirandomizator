@@ -79,6 +79,7 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
   const [playStopText, setPlayStopText] = useState(playImg);
   const [showPlayPad, setShowPlayPad] = useState([0, 0, 0, 0]);
   const [showPlayPadTimeouts, setShowPlayPadTimeouts] = useState([]);
+  const [playStopClass, setPlayStopClass] = useState("play1");
 
   //GENERATED MIDI DATA
   const [downloadMidiData, setDownloadMidiData] = useState();
@@ -86,6 +87,18 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
   //SAVES
   const [saves, setSaves] = useLocalStorageState('saves', {defaultValue: [] });
   const savesRef = useRef();
+
+  //RANDOM ANIMATION
+  const [randomClass, setRandomClass] = useState("random");
+
+  //LIKE ANIMATION
+  const [likeClass, setLikeClass] = useState("like");
+
+  //DOWNLOAD ANIMATION
+  const [downloadClass, setDownloadClass] = useState("download")
+
+  //PLAY/STOP ANIMATION
+  const [playStopAnimClass, setPlayStopAnimClass] = useState("playStopAnim")
 
   //RANDOM PROGRESSION AND VOICING
   function randomProgressionFun() {
@@ -111,6 +124,12 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
     setChoosedVoicing2(thisVoicing[1]);
     setChoosedVoicing3(thisVoicing[2]);
     setChoosedVoicing4(thisVoicing[3]);
+
+    //animation
+    setRandomClass("random-active");
+    setTimeout(() => {
+      setRandomClass("random");
+    }, 1000)
   }
 
   //COMBINE RHYTHM AND NOTES
@@ -171,6 +190,7 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
   function play(tempo, rythm) {
 
     const oneBeat = (1000 * 60 / tempo / 1) ;
+    
 
     //IF LOOP ON/OFF
     if(loopStatus === true){
@@ -261,8 +281,6 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
       const thisTimeout = setTimeout(() => {
           startOsc(tempo, item, duration, audioContext);
       },  (counter / chordRate)  + smallDelay);
-
-      console.log(smallDelay)
 
 
       thisFunctionTimeouts.push(thisTimeout);
@@ -621,23 +639,62 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
     if(saves.length === 0){
       savesRef.current.scrollIntoView();
     }
+
+    //ANIMATION 1
+    const thisWidths = [12, 15, 8, 12];
+    const thisDistance = [-3, 10, -10, 25];
+
+    for(let i = 0; i < 4; i++) {
+      const createImg = document.createElement("img");
+      createImg.src = likeImg;
+      createImg.width = thisWidths[i];
+      createImg.className = "likeanimation"
+      createImg.style = "margin-left:" + thisDistance[i] + "px;"
+
+      //create element after 200ms each
+      setTimeout(() => {
+        document.getElementById("menu").appendChild(createImg);
+
+        //remove element after animation
+        setTimeout(() => {
+          document.getElementById("menu").removeChild(createImg);
+        }, 2000)
+      }, i * 200);
+    }
+
+    //ANIMATION 2
+    setLikeClass("like-active");
+    setTimeout(() => {
+      setLikeClass("like")
+    }, 2600)
+  }
+
+  //DOWNLOAD IT
+  function donwloadIt() {
+    //animation
+    setDownloadClass("download-active")
+    setTimeout(() => {
+      setDownloadClass("download")
+    }, 1000)
   }
 
   //UPDATE PATTERN 
   useEffect(() => {
       createRhythmFun();
+      setPlayStopAnimClass("playStopAnim");
 
       if(isPlaying === true){
         const thisRhythm = createRhythmFun();
           stopAll();
           play(bpm, thisRhythm);
+          setPlayStopAnimClass("playStopAnim-active");
       }else{
         stopAll();
+        setPlayStopAnimClass("playStopAnim");
       }
 
   }, [oscType, loopStatus, tempoClicked,metronomeStatus, drumStatus ,scaleNotes, firstProgression, secondProgression, thirdProgression, fourthProgression, choosedVoicing1, choosedVoicing2, choosedVoicing3, choosedVoicing4, chordRate, rhythmStyle])
 
-  console.log(getChordNames(firstProgression))
 
   // Load the audio file when the component mounts
   useEffect(() => {
@@ -675,9 +732,13 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
   useEffect(() => {
     if(isPlaying === false){
       setPlayStopText(playImg);
+      setPlayStopClass("play1");
       setShowPlayPad([0,0,0,0]);
+      setPlayStopAnimClass("playStopAnim");
     }else{
       setPlayStopText(stopImg)
+      setPlayStopClass("stop1");
+      setPlayStopAnimClass("playStopAnim-active");
     }
 
   }, [isPlaying])
@@ -735,12 +796,32 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
               //padding: "30px 0px",
 
             }} 
-            className="row center">
+            className="row center"
+            id="menu">
 
-              <img onClick={() => {playStop(bpm, newRyhtmProgression)}} className="play" style={{cursor: "pointer"}} width={30} src={playStopText} alt="play/stop" title="play/stop"></img>
-              <img onClick={randomProgressionFun} className="random" style={{cursor: "pointer"}} width={40} src={randomImg} alt="random" title="random"></img>
-              <img onClick={saveIt} className="play" style={{cursor: "pointer"}} width={40} src={likeImg} alt="favorite" title="favorite"></img>
+              <div 
+              className="playStopBox"
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                //background: "orange", 
+                width: "35px", 
+                height: "35px",
+
+                position: "relative"
+                }}>
+
+
+
+                <img onClick={() => {playStop(bpm, newRyhtmProgression)}} className={playStopClass} style={{cursor: "pointer", position: "absolute"}} src={playStopText} alt="play/stop" title="play/stop"></img>
+              </div>
+              <img onClick={randomProgressionFun} className={randomClass} style={{cursor: "pointer"}} width={40} src={randomImg} alt="random" title="random"></img>
+              <img onClick={saveIt} className={likeClass} style={{cursor: "pointer"}} width={40} src={likeImg} alt="favorite" title="favorite"></img>
               <a 
+              className={downloadClass}
+              onClick={donwloadIt}
               href={downloadMidiData} 
               download={
                 getChordNames(0).name + "__" + 
@@ -749,7 +830,7 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
                 getSaveProgression(thirdProgression)  + "-" + 
                 getSaveProgression(fourthProgression) + ".midi"
                 }>
-                  <img className="random" style={{cursor: "pointer", paddingTop: "5px"}} width={30} src={saveImg} alt="download midi" title="download midi"></img>
+                  <img className={downloadClass} style={{cursor: "pointer", paddingTop: "5px"}} width={30} src={saveImg} alt="download midi" title="download midi"></img>
                 </a>
             </div>
           </div>
