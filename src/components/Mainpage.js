@@ -30,7 +30,7 @@ export default function Mainpage() {
     const [drumOpacity, setDrumOpacity] = useLocalStorageState('drumOpacity', {defaultValue: "1" });
 
     //TONALITY & SCALE & BPM STATES
-    const [tonality, setTonality] = useLocalStorageState('tonality', {defaultValue: 3 });
+    const [tonality, setTonality] = useLocalStorageState('tonality', {defaultValue: 0 });
     const [scale, setScale] = useLocalStorageState('scale', {defaultValue: "major" });
     const [bpm, setBpm] = useLocalStorageState('bpm', {defaultValue: 70 });
     const [tempoClicked, setTempoClicked] = useState(false);

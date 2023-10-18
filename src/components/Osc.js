@@ -29,23 +29,34 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
   const { voicing } = Voicing();
   const { rhythm } = Rhythm ();
 
+  /*
   console.log(midiData1.tracks[1].notes)
   console.log(midiData1.tracks[1].notes[0].name)
   console.log(midiData1.tracks[1].notes[0].time)
   console.log(midiData1.tracks[1].notes[0].duration)
   console.log(midiData1.tracks[1].notes[0].velocity)
+  */
+
 
   //PROGRESSION STATES
-  const [firstProgression, setFirstProgression] = useLocalStorageState('firstProgression', {defaultValue: 0 });
-  const [secondProgression, setSecondProgression] = useLocalStorageState('secondProgression', {defaultValue: 0 });
+  const [firstProgression, setFirstProgression] = useLocalStorageState('firstProgression', {defaultValue: 3 });
+  const [secondProgression, setSecondProgression] = useLocalStorageState('secondProgression', {defaultValue: 2 });
   const [thirdProgression, setThirdProgression] = useLocalStorageState('thirdProgression', {defaultValue: 1 });
   const [fourthProgression, setFourthProgression] = useLocalStorageState('fourthProgression', {defaultValue: 2 });
 
   //VOICING STATES
-  const [choosedVoicing1, setChoosedVoicing1] = useLocalStorageState('choosedVoicing1', {defaultValue: 0 });
+  const [choosedVoicing1, setChoosedVoicing1] = useLocalStorageState('choosedVoicing1', {defaultValue: 1 });
   const [choosedVoicing2, setChoosedVoicing2] = useLocalStorageState('choosedVoicing2', {defaultValue: 1 });
   const [choosedVoicing3, setChoosedVoicing3] = useLocalStorageState('choosedVoicing3', {defaultValue: 1 });
   const [choosedVoicing4, setChoosedVoicing4] = useLocalStorageState('choosedVoicing4', {defaultValue: 1 });
+
+
+  console.log(
+    (firstProgression + 1) + "," + (choosedVoicing1 + 1) + "," +
+    (secondProgression + 1) + "," + (choosedVoicing2 + 1) + "," + 
+    (thirdProgression + 1) + "," + (choosedVoicing3 + 1) + "," + 
+    (fourthProgression + 1) + "," + (choosedVoicing4 + 1)  
+  )
 
   //OSCILLATOR TYPE STATE
   const [oscType, setOscType] = useLocalStorageState('oscType', {defaultValue: "sine" });
@@ -63,8 +74,8 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
   const filtered4 = voicing.filter((item) => item.name === chordname4);
 
   //CHORD STATES
-  const [chordRate, setchordRate] = useLocalStorageState('chordRate', {defaultValue: 2 });
-  const [rhythmStyle, setRhythmStyle] = useLocalStorageState('rhythmStyle', {defaultValue: 1 });
+  const [chordRate, setchordRate] = useLocalStorageState('chordRate', {defaultValue: 1 });
+  const [rhythmStyle, setRhythmStyle] = useLocalStorageState('rhythmStyle', {defaultValue: 0 });
   const [newRyhtmProgression, setNewRyhtmProgression] = useState();
 
   //DRUM STATES
@@ -119,22 +130,32 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
   async function getData(position, voicing)  {
 
     let thisData;
+    let thisScale;
+
+    switch(scale){
+      case "major":
+        thisScale = "0"
+        break;
+      case "minor":
+        thisScale = "1"
+        break;
+    };
+    
     const thisPosition = String(position);
     const thisVoicing = String(voicing);
-    const thisOutput = thisPosition + thisVoicing
-
+    const thisOutput = thisScale + thisPosition + thisVoicing
 
     console.log("FETCHING")
-    const getApiData = await fetch("https://sadasd-lmcz.onrender.com/?input=" + thisOutput)
+    const getApiData = await fetch("https://newchorditkolearning.onrender.com/?input=" + thisOutput)
       .then(response => response.json())
       .then(json => thisData = json)
       .catch(error => console.error(error));   
+
 
     console.log("FINISHED")
 
     return thisData
   };
-
 
 
   //RANDOM PROGRESSION AND VOICING
@@ -902,8 +923,10 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
                 <img className={downloadClass} style={{cursor: "pointer", paddingTop: "5px"}} width={30} src={saveImg} alt="download midi" title="download midi"></img>
               </a>
 
-              <input type="checkbox" id="ai" onChange={aiFun}></input>
+
+              <input type="checkbox" id="ai" onChange={aiFun}></input>                                            
               <label htmlFor="ai">AI correction</label>
+
 
             </div>
           </div>
