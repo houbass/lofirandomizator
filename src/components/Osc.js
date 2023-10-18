@@ -902,9 +902,6 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
                 <img className={downloadClass} style={{cursor: "pointer", paddingTop: "5px"}} width={30} src={saveImg} alt="download midi" title="download midi"></img>
               </a>
 
-              <input type="checkbox" id="ai" onChange={aiFun}></input>
-              <label htmlFor="ai">AI correction</label>
-
             </div>
           </div>
 
