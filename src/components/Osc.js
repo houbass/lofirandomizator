@@ -22,9 +22,18 @@ import snareAudio from "./audio/snare.mp3";
 import hihatAudio from "./audio/hihat.mp3";
 
 
+import midiData1 from "./midiData.json";
+
+
 export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatus, drumStatus, tempoClicked }) {
   const { voicing } = Voicing();
   const { rhythm } = Rhythm ();
+
+  console.log(midiData1.tracks[1].notes)
+  console.log(midiData1.tracks[1].notes[0].name)
+  console.log(midiData1.tracks[1].notes[0].time)
+  console.log(midiData1.tracks[1].notes[0].duration)
+  console.log(midiData1.tracks[1].notes[0].velocity)
 
   //PROGRESSION STATES
   const [firstProgression, setFirstProgression] = useLocalStorageState('firstProgression', {defaultValue: 0 });
@@ -100,37 +109,92 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
   //PLAY/STOP ANIMATION
   const [playStopAnimClass, setPlayStopAnimClass] = useState("playStopAnim")
 
+  //AI CORRECTION
+  const [aiCorrection, setAiCorrection] = useState(false);
+
+  //FIREBASE DATA
+  const [myData, setMyData] = useState(null);
+
+  //GET DATA FROM DATABASE
+  async function getData(position, voicing)  {
+
+    let thisData;
+    const thisPosition = String(position);
+    const thisVoicing = String(voicing);
+    const thisOutput = thisPosition + thisVoicing
+
+
+    console.log("FETCHING")
+    const getApiData = await fetch("https://sadasd-lmcz.onrender.com/?input=" + thisOutput)
+      .then(response => response.json())
+      .then(json => thisData = json)
+      .catch(error => console.error(error));   
+
+    console.log("FINISHED")
+
+    return thisData
+  };
+
+
+
   //RANDOM PROGRESSION AND VOICING
-  function randomProgressionFun() {
-    const thisProgression = [];
-    const thisVoicing = []
-
-    for (let i = 0; i < 4; i++) {
-      const randomNumber = Math.round(Math.random() * 6);
-      thisProgression.push(randomNumber);
-
-      const randomNumber2 = Math.round(Math.random() * 2);
-      thisVoicing.push(randomNumber2);
-    }
-  
-    //set random progression
-    setFirstProgression(thisProgression[0]);
-    setSecondProgression(thisProgression[1]);
-    setThirdProgression(thisProgression[2]);
-    setFourthProgression(thisProgression[3]);
-
-    //set random voicing
-    setChoosedVoicing1(thisVoicing[0]);
-    setChoosedVoicing2(thisVoicing[1]);
-    setChoosedVoicing3(thisVoicing[2]);
-    setChoosedVoicing4(thisVoicing[3]);
-
+  async function randomProgressionFun() {
     //animation
     setRandomClass("random-active");
-    setTimeout(() => {
-      setRandomClass("random");
-    }, 1000)
+    if(aiCorrection === false){
+      const thisProgression = [];
+      const thisVoicing = []
+
+      for (let i = 0; i < 4; i++) {
+        const randomNumber = Math.round(Math.random() * 6);
+        thisProgression.push(randomNumber);
+
+        const randomNumber2 = Math.round(Math.random() * 2);
+        thisVoicing.push(randomNumber2);
+      }
+    
+      //set random progression
+      setFirstProgression(thisProgression[0]);
+      setSecondProgression(thisProgression[1]);
+      setThirdProgression(thisProgression[2]);
+      setFourthProgression(thisProgression[3]);
+
+      //set random voicing
+      setChoosedVoicing1(thisVoicing[0]);
+      setChoosedVoicing2(thisVoicing[1]);
+      setChoosedVoicing3(thisVoicing[2]);
+      setChoosedVoicing4(thisVoicing[3]);
+
+
+      setTimeout(() => {
+        setRandomClass("random");
+      }, 1000)
+    }else{
+      const randomPositin = 1 + Math.round(Math.random() * 6);
+      const randomVoicing = 1 + Math.round(Math.random() * 2);
+
+      const aiData = await getData(randomPositin, randomVoicing);
+      console.log(aiData)
+
+      //set random progression
+      setFirstProgression(Number(aiData.prediction[0][0]) - 1);
+      setSecondProgression(Number(aiData.prediction[1][0]) - 1);
+      setThirdProgression(Number(aiData.prediction[2][0]) - 1);
+      setFourthProgression(Number(aiData.prediction[3][0]) - 1);
+
+      //set random voicing
+      setChoosedVoicing1(Number(aiData.prediction[0][1]) - 1);
+      setChoosedVoicing2(Number(aiData.prediction[1][1]) - 1);
+      setChoosedVoicing3(Number(aiData.prediction[2][1]) - 1);
+      setChoosedVoicing4(Number(aiData.prediction[3][1]) - 1);
+
+      //cancel animation
+      setTimeout(() => {
+        setRandomClass("random");
+      }, 1000)
+    }
   }
+
 
   //COMBINE RHYTHM AND NOTES
   function createRhythmFun() {
@@ -695,6 +759,12 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
 
   }, [oscType, loopStatus, tempoClicked,metronomeStatus, drumStatus ,scaleNotes, firstProgression, secondProgression, thirdProgression, fourthProgression, choosedVoicing1, choosedVoicing2, choosedVoicing3, choosedVoicing4, chordRate, rhythmStyle])
 
+  //AI FUNCTION
+  function aiFun() {
+    setAiCorrection(!aiCorrection);
+  }
+
+
 
   // Load the audio file when the component mounts
   useEffect(() => {
@@ -726,7 +796,6 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
 
     fetchAudioData();
   }, []);
-
 
   //PLAY/STOP BUTTON
   useEffect(() => {
@@ -830,8 +899,12 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
                 getSaveProgression(thirdProgression)  + "-" + 
                 getSaveProgression(fourthProgression) + ".midi"
                 }>
-                  <img className={downloadClass} style={{cursor: "pointer", paddingTop: "5px"}} width={30} src={saveImg} alt="download midi" title="download midi"></img>
-                </a>
+                <img className={downloadClass} style={{cursor: "pointer", paddingTop: "5px"}} width={30} src={saveImg} alt="download midi" title="download midi"></img>
+              </a>
+
+              <input type="checkbox" id="ai" onChange={aiFun}></input>
+              <label htmlFor="ai">AI correction</label>
+
             </div>
           </div>
 

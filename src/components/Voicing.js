@@ -1003,23 +1003,23 @@ export default function Voicing() {
                 //1
                 [
                     {name: "B3", freq: 246.9},
-                    {name: "D#4", freq: 311.1},
-                    {name: "F#4", freq: 370.0},
+                    {name: "D4", freq: 293.66},
+                    {name: "F4", freq: 349.23},
                     {name: "A4", freq: 440.0}
                 ],
                 //2
                 [
                     {name: "B4", freq: 246.9 * 2},
-                    {name: "D#4", freq: 311.1},
-                    {name: "F#4", freq: 370.0},
+                    {name: "D4", freq: 293.66},
+                    {name: "F4", freq: 349.23},
                     {name: "A3", freq: 440.0 / 2}
                 ],
                 //3
                 [
                     //{name: "B3", freq: 246.9},
-                    {name: "D#4", freq: 311.1},
-                    {name: "F#3", freq: 370.0 / 2},
-                    {name: "F#4", freq: 370.0},
+                    {name: "D4", freq: 293.66},
+                    {name: "F3", freq: 349.23 / 2},
+                    {name: "F4", freq: 349.23},
                     {name: "A3", freq: 440.0 / 2}
                 ],
             ]
