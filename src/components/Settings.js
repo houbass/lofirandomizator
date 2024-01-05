@@ -39,6 +39,8 @@ export default function Settings({ tonality, scale, bpm, loopStatus, metronomeSt
       settingScaleNotes.push(notes[tonality + selectedScale[i]]);
     }
     setScaleNotes(settingScaleNotes);
+
+    // eslint-disable-next-line
   }, [scale, tonality]);
 
   return (

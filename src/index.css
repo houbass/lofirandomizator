@@ -36,6 +36,8 @@ p, h1, h2, h3, h4, h5 {
 .backgroundPic {
     border-radius: 40px 40px 0 0;
     border: none;
+
+    
 }
 
 .settings {
@@ -455,4 +457,15 @@ p, h1, h2, h3, h4, h5 {
     height: 25px;
     background: #ff9da1;
     cursor: pointer;
+  }
+
+  .visuallyhidden {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
   }

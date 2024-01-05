@@ -20,20 +20,19 @@ import Rhythm from "./Rhythm";
 import kickAudio from "./audio/kick.mp3";
 import snareAudio from "./audio/snare.mp3";
 import hihatAudio from "./audio/hihat.mp3";
-
-
-import midiData1 from "./midiData.json";
-
+//import midiData1 from "./midiData.json";
 
 export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatus, drumStatus, tempoClicked }) {
   const { voicing } = Voicing();
   const { rhythm } = Rhythm ();
 
+  /*
   console.log(midiData1.tracks[1].notes)
   console.log(midiData1.tracks[1].notes[0].name)
   console.log(midiData1.tracks[1].notes[0].time)
   console.log(midiData1.tracks[1].notes[0].duration)
   console.log(midiData1.tracks[1].notes[0].velocity)
+  */
 
   //PROGRESSION STATES
   const [firstProgression, setFirstProgression] = useLocalStorageState('firstProgression', {defaultValue: 0 });
@@ -90,7 +89,6 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
   const [showPlayPadTimeouts, setShowPlayPadTimeouts] = useState([]);
   const [playStopClass, setPlayStopClass] = useState("play1");
 
-  //GENERATED MIDI DATA
   const [downloadMidiData, setDownloadMidiData] = useState();
 
   //SAVES
@@ -106,95 +104,39 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
   //DOWNLOAD ANIMATION
   const [downloadClass, setDownloadClass] = useState("download")
 
-  //PLAY/STOP ANIMATION
-  const [playStopAnimClass, setPlayStopAnimClass] = useState("playStopAnim")
-
-  //AI CORRECTION
-  const [aiCorrection, setAiCorrection] = useState(false);
-
-  //FIREBASE DATA
-  const [myData, setMyData] = useState(null);
-
-  //GET DATA FROM DATABASE
-  async function getData(position, voicing)  {
-
-    let thisData;
-    const thisPosition = String(position);
-    const thisVoicing = String(voicing);
-    const thisOutput = thisPosition + thisVoicing
-
-
-    console.log("FETCHING")
-    const getApiData = await fetch("https://sadasd-lmcz.onrender.com/?input=" + thisOutput)
-      .then(response => response.json())
-      .then(json => thisData = json)
-      .catch(error => console.error(error));   
-
-    console.log("FINISHED")
-
-    return thisData
-  };
-
-
 
   //RANDOM PROGRESSION AND VOICING
   async function randomProgressionFun() {
     //animation
     setRandomClass("random-active");
-    if(aiCorrection === false){
-      const thisProgression = [];
-      const thisVoicing = []
 
-      for (let i = 0; i < 4; i++) {
-        const randomNumber = Math.round(Math.random() * 6);
-        thisProgression.push(randomNumber);
+    const thisProgression = [];
+    const thisVoicing = []
 
-        const randomNumber2 = Math.round(Math.random() * 2);
-        thisVoicing.push(randomNumber2);
-      }
-    
-      //set random progression
-      setFirstProgression(thisProgression[0]);
-      setSecondProgression(thisProgression[1]);
-      setThirdProgression(thisProgression[2]);
-      setFourthProgression(thisProgression[3]);
+    for (let i = 0; i < 4; i++) {
+      const randomNumber = Math.round(Math.random() * 6);
+      thisProgression.push(randomNumber);
 
-      //set random voicing
-      setChoosedVoicing1(thisVoicing[0]);
-      setChoosedVoicing2(thisVoicing[1]);
-      setChoosedVoicing3(thisVoicing[2]);
-      setChoosedVoicing4(thisVoicing[3]);
-
-
-      setTimeout(() => {
-        setRandomClass("random");
-      }, 1000)
-    }else{
-      const randomPositin = 1 + Math.round(Math.random() * 6);
-      const randomVoicing = 1 + Math.round(Math.random() * 2);
-
-      const aiData = await getData(randomPositin, randomVoicing);
-      console.log(aiData)
-
-      //set random progression
-      setFirstProgression(Number(aiData.prediction[0][0]) - 1);
-      setSecondProgression(Number(aiData.prediction[1][0]) - 1);
-      setThirdProgression(Number(aiData.prediction[2][0]) - 1);
-      setFourthProgression(Number(aiData.prediction[3][0]) - 1);
-
-      //set random voicing
-      setChoosedVoicing1(Number(aiData.prediction[0][1]) - 1);
-      setChoosedVoicing2(Number(aiData.prediction[1][1]) - 1);
-      setChoosedVoicing3(Number(aiData.prediction[2][1]) - 1);
-      setChoosedVoicing4(Number(aiData.prediction[3][1]) - 1);
-
-      //cancel animation
-      setTimeout(() => {
-        setRandomClass("random");
-      }, 1000)
+      const randomNumber2 = Math.round(Math.random() * 2);
+      thisVoicing.push(randomNumber2);
     }
-  }
+  
+    //set random progression
+    setFirstProgression(thisProgression[0]);
+    setSecondProgression(thisProgression[1]);
+    setThirdProgression(thisProgression[2]);
+    setFourthProgression(thisProgression[3]);
 
+    //set random voicing
+    setChoosedVoicing1(thisVoicing[0]);
+    setChoosedVoicing2(thisVoicing[1]);
+    setChoosedVoicing3(thisVoicing[2]);
+    setChoosedVoicing4(thisVoicing[3]);
+
+    setTimeout(() => {
+      setRandomClass("random");
+    }, 1000)
+  }
 
   //COMBINE RHYTHM AND NOTES
   function createRhythmFun() {
@@ -305,6 +247,12 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
               showPlayPad[1] = 0;
               showPlayPad[2] = 0;
               showPlayPad[3] = 1;
+              break;
+          default:
+              showPlayPad[0] = 1;
+              showPlayPad[1] = 0;
+              showPlayPad[2] = 0;
+              showPlayPad[3] = 0;
               break;
         }
       }, step * i)
@@ -502,7 +450,6 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
   //PLAY OSCILATOR
   function startOsc(tempo, currentChordNotes, duration, audioContext) {
 
-    const velocity = [0.1, 0.3, 0.3, 0.3];
     const oneBeat = (4 * 60 / tempo / duration) / chordRate ;
 
     let thisOscs = [];
@@ -568,6 +515,9 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
         case 6:
           chordScale = "dim";
           break;
+        default:
+          chordScale = "major";
+          break;
       }
     }else{
       switch(progression) {
@@ -591,6 +541,9 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
           break;
         case 6:
           chordScale = "major";
+          break;
+        default:
+          chordScale = "minor";
           break;
       }
     }
@@ -646,7 +599,6 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
     setAllIntervals([]);
     setIsPlayingTimeout([]);
     setIsPlaying(false);
-    //setShowPlayPad([0,0,0,0]);
   }
 
   function getSaveProgression(input) {
@@ -673,6 +625,9 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
         break;
       case 6: 
         number = "VII";
+        break;
+      default:
+        number = "I";
         break;
     }
 
@@ -745,25 +700,16 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
   //UPDATE PATTERN 
   useEffect(() => {
       createRhythmFun();
-      setPlayStopAnimClass("playStopAnim");
 
       if(isPlaying === true){
         const thisRhythm = createRhythmFun();
           stopAll();
           play(bpm, thisRhythm);
-          setPlayStopAnimClass("playStopAnim-active");
       }else{
         stopAll();
-        setPlayStopAnimClass("playStopAnim");
       }
-
+      // eslint-disable-next-line
   }, [oscType, loopStatus, tempoClicked,metronomeStatus, drumStatus ,scaleNotes, firstProgression, secondProgression, thirdProgression, fourthProgression, choosedVoicing1, choosedVoicing2, choosedVoicing3, choosedVoicing4, chordRate, rhythmStyle])
-
-  //AI FUNCTION
-  function aiFun() {
-    setAiCorrection(!aiCorrection);
-  }
-
 
 
   // Load the audio file when the component mounts
@@ -803,11 +749,9 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
       setPlayStopText(playImg);
       setPlayStopClass("play1");
       setShowPlayPad([0,0,0,0]);
-      setPlayStopAnimClass("playStopAnim");
     }else{
       setPlayStopText(stopImg)
       setPlayStopClass("stop1");
-      setPlayStopAnimClass("playStopAnim-active");
     }
 
   }, [isPlaying])
@@ -824,7 +768,6 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
 
       <div
       style={{
-        //background: "lightblue",
         paddingTop:"30px",
         width: "90%",
         display: "flex",
@@ -834,7 +777,6 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
       }}>
         <div
         style={{
-          //background: "green",
           width: "90%",
           display: "flex",
           flexDirection: "column",
@@ -849,7 +791,6 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
           <div 
           style={{
             justifyContent: "center",
-            //marginTop: "70px",
             background: "rgb(22, 35, 51)",
             position: "absolute",
             top: "-22px",
@@ -859,11 +800,7 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
             <div 
             style={{
               justifyContent: "space-around",
-              //background: "blue",
-              //gap: "20px",
               width: "250px",
-              //padding: "30px 0px",
-
             }} 
             className="row center"
             id="menu">
@@ -875,7 +812,6 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "center",
-                //background: "orange", 
                 width: "35px", 
                 height: "35px",
 
@@ -914,7 +850,10 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
             gap: "10px",
           }}>
               <div className="pad" style={{pointerEvents: "all"}}>
+             
+                <label htmlFor="firstPosition" className="visuallyhidden">first position</label>
                 <select 
+                id="firstPosition"
                 style={{
                   position: "absolute"
                 }} className="selector2" value={firstProgression} onChange={(e) => {setFirstProgression(Number(e.target.value))}}>
@@ -945,7 +884,10 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
 
               </div>
               <div className="pad">
+
+                <label htmlFor="secondPosition" className="visuallyhidden">second position</label>
                 <select 
+                id="secondPosition"
                 style={{
                   position: "absolute"
                 }} className="selector2" value={secondProgression} onChange={(e) => {setSecondProgression(Number(e.target.value))}}>
@@ -977,10 +919,16 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
               </div>
 
               <div className="pad">
+
+                <label htmlFor="thirdPosition" className="visuallyhidden">third position</label>
                 <select 
+                id="thirdPosition"
                 style={{
                   position: "absolute"
-                }} className="selector2" value={thirdProgression} onChange={(e) => {setThirdProgression(Number(e.target.value))}}>
+                }} 
+                className="selector2" 
+                value={thirdProgression} 
+                onChange={(e) => {setThirdProgression(Number(e.target.value))}}>
                   <option value="0">I</option>
                   <option value="1">II</option>
                   <option value="2">III</option>
@@ -1002,13 +950,15 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
                   }}>
                     {getChordNames(thirdProgression).name}
                 </p>
-
                 <div style={{opacity: showPlayPad[2]}} className="pad2">
                 </div>
-
               </div>
+
               <div className="pad">
+
+                <label htmlFor="fourthPosition" className="visuallyhidden">fourth position</label>
                 <select 
+                id="fourthPosition"
                 style={{
                   position: "absolute"
                 }} className="selector2" value={fourthProgression} onChange={(e) => {setFourthProgression(Number(e.target.value))}}>
@@ -1052,7 +1002,8 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
             
             <fieldset className="voicingField">
 
-              <select className="selector3" value={choosedVoicing1} onChange={(e) => {setChoosedVoicing1(Number(e.target.value))}}>
+              <label htmlFor="firstVoicing" className="visuallyhidden">first voicing</label>
+              <select id="firstVoicing" className="selector3" value={choosedVoicing1} onChange={(e) => {setChoosedVoicing1(Number(e.target.value))}}>
                 {filtered1[0].voicing.map((item, index) => {
                   return(
                     <option key={index} value={index}>{index + 1}</option>
@@ -1060,7 +1011,8 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
                 })}
               </select>
 
-              <select className="selector3" value={choosedVoicing2} onChange={(e) => {setChoosedVoicing2(Number(e.target.value))}}>
+              <label htmlFor="secondVoicing" className="visuallyhidden">second voicing</label>
+              <select id="secondVoicing" className="selector3" value={choosedVoicing2} onChange={(e) => {setChoosedVoicing2(Number(e.target.value))}}>
                 {filtered2[0].voicing.map((item, index) => {
                   return(
                     <option key={index} value={index}>{index + 1}</option>
@@ -1068,7 +1020,8 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
                 })}
               </select>
 
-              <select className="selector3" value={choosedVoicing3} onChange={(e) => {setChoosedVoicing3(Number(e.target.value))}}>
+              <label htmlFor="thirdVoicing" className="visuallyhidden">third voicing</label>
+              <select id="thirdVoicing" className="selector3" value={choosedVoicing3} onChange={(e) => {setChoosedVoicing3(Number(e.target.value))}}>
                 {filtered3[0].voicing.map((item, index) => {
                   return(
                     <option key={index} value={index}>{index + 1}</option>
@@ -1076,7 +1029,8 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
                 })}
               </select>
 
-              <select className="selector3" value={choosedVoicing4} onChange={(e) => {setChoosedVoicing4(Number(e.target.value))}}>
+              <label htmlFor="fourthVoicing" className="visuallyhidden">fourth voicing</label>
+              <select id="fourthVoicing" className="selector3" value={choosedVoicing4} onChange={(e) => {setChoosedVoicing4(Number(e.target.value))}}>
                 {filtered4[0].voicing.map((item, index) => {
                   return(
                     <option key={index} value={index}>{index + 1}</option>
@@ -1090,16 +1044,15 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
           <div
           style={{
             position: "absolute",
-            //background: "orange",
-            //width: "100%",
             display: "flex",
             flexDirection: "row",
-            //gap: "10px",
             bottom: "20px",
           }}>
             <div className="col g10">
               <p>rate</p>
-              <select className="selector" value={chordRate} onChange={(e) => setchordRate(Number(e.target.value))}>
+
+              <label htmlFor="rate" className="visuallyhidden">rate</label>
+              <select id="rate" className="selector" value={chordRate} onChange={(e) => setchordRate(Number(e.target.value))}>
                 <option value={1}>1x</option>
                 <option value={2}>2x</option>
                 <option value={4}>4x</option>
@@ -1113,7 +1066,9 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
               borderLeft: "3px solid rgba(255,255,255,0.8)"
             }} className="col g10">
               <p>rhythm</p>
-              <select className="selector" value={rhythmStyle} onChange={(e) => {setRhythmStyle(Number(e.target.value))}}>
+
+              <label htmlFor="rhythm" className="visuallyhidden">rhythm style</label>
+              <select id="rhythm" className="selector" value={rhythmStyle} onChange={(e) => {setRhythmStyle(Number(e.target.value))}}>
                 <option value={0}>basic</option>
                 <option value={1}>jazzy</option>
                 <option value={2}>fancy</option>
@@ -1127,7 +1082,9 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
               borderLeft: "3px solid rgba(255,255,255,0.8)"
             }} className="col g10">
               <p>oscillator</p>
-              <select className="selector" value={oscType} onChange={(e) => setOscType(e.target.value)}>
+
+              <label htmlFor="osc" className="visuallyhidden">oscillator type</label>
+              <select id="osc" className="selector" value={oscType} onChange={(e) => setOscType(e.target.value)}>
                 <option value="sine">sine</option>
                 <option value="triangle">triangle</option>
                 <option value="sawtooth">saw</option>
@@ -1177,7 +1134,23 @@ export default function Osc({ scaleNotes, bpm, scale, loopStatus, metronomeStatu
                 <p className="w4">{item.bpm}BPM</p>
               </div>
               <div className="row g10">
-                <img onClick={() => {setSaves(saves.filter((item2, index2) => {if(index2 === index){return}else{return item2}}))}} className="random" style={{cursor: "pointer"}} width={25} src={deleteImg} alt="delete" title="delete"></img>
+
+                <img 
+                onClick={() => {
+                  setSaves(saves.filter((item2, index2) => {
+                    if(index2 === index){
+                      return null
+                    }else{
+                      return item2
+                }}))}} 
+                className="random" 
+                style={{cursor: "pointer"}} 
+                width={25} 
+                src={deleteImg} 
+                alt="delete" 
+                title="delete"
+                ></img>
+
                 <a href={item.midi} download={item.tonality + "__" + item.progression + ".midi"}><img className="random" style={{cursor: "pointer", paddingTop: "5px"}} width={20} src={saveImg} alt="download midi" title="download midi"></img></a>
                 <img onClick={() => {playStop(item.bpm, item.data)}} className="play" style={{cursor: "pointer"}} width={20} src={playStopText} alt="play/stop" title="play/stop"></img>
               </div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 //local storage
 import useLocalStorageState from 'use-local-storage-state'
@@ -35,6 +35,11 @@ export default function Mainpage() {
     const [bpm, setBpm] = useLocalStorageState('bpm', {defaultValue: 70 });
     const [tempoClicked, setTempoClicked] = useState(false);
 
+    //MAIN OPACITY (when img loaded)
+    const [mainOpacity, setMainOpacity] = useState(0);
+    const [allImagesLoaded, setAllImagesLoaded] = useState(false);
+    const imageUrls = [backgroundPic];
+
     //HANDLERS
     //loop handler
     function loopHandler() {
@@ -69,12 +74,62 @@ export default function Mainpage() {
         }
     }
 
+
+    //WAIT TO LOAD ALL IMAGES
+    useEffect(() => {
+  
+      const loadImage = (url) =>
+        new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.onerror = reject;
+          img.src = url;
+        });
+  
+      const loadAllImages = async () => {
+        try {
+          const imagePromises = imageUrls.map(loadImage);
+          await Promise.all(imagePromises);
+          setAllImagesLoaded(true);
+        } catch (error) {
+          console.error('Error loading images:', error);
+        }
+      };
+  
+      loadAllImages();
+      // eslint-disable-next-line
+    }, []);
+  
+    //CHECK IF ALL IMAGES ARE LOADED
+    useEffect(() => {
+      if(allImagesLoaded === true){
+        setMainOpacity(1);
+      }
+      // eslint-disable-next-line
+    }, [allImagesLoaded]);
+
     return(
         <>
-        <div className="mainpage">
-
+        <div 
+        className="mainpage"
+        style={{
+            opacity: mainOpacity,
+            transition: "1s"
+        }}
+        >
             <div>
-                <img className="backgroundPic" width="100%" height="auto" src={backgroundPic}></img>
+                <img 
+                className="backgroundPic" 
+                src={backgroundPic} 
+                alt="background"
+                style={{
+                    width: "100%",
+                    aspectRatio: "auto 1456 / 661"
+                }}
+                loading="lazy"
+                
+                ></img>
+            
                 <div 
                 style={{
                     position: "absolute",
@@ -95,7 +150,7 @@ export default function Mainpage() {
                         height:"fit-content",
                         paddingTop: "30px"
                     }}>
-                        <img onClick={loopHandler} style={{opacity: loopOpacity, cursor: "pointer"}} src={loopImg} width={35}></img>
+                        <img onClick={loopHandler} style={{opacity: loopOpacity, cursor: "pointer"}} src={loopImg} width={35} alt="loop on/off"></img>
                     </div>
 
                     <div 
@@ -108,8 +163,8 @@ export default function Mainpage() {
                         height:"fit-content",
                         paddingTop: "30px"
                     }}>
-                        <img onClick={metronomeHandler} style={{opacity: metronomeOpacity, cursor: "pointer"}} src={metronomeImg} width={35}></img>
-                        <img onClick={drumHandler} style={{opacity: drumOpacity, cursor: "pointer"}} src={drumsImg} width={35}></img>
+                        <img onClick={metronomeHandler} style={{opacity: metronomeOpacity, cursor: "pointer"}} src={metronomeImg} width={35} alt="metronome on/off"></img>
+                        <img onClick={drumHandler} style={{opacity: drumOpacity, cursor: "pointer"}} src={drumsImg} width={35} alt="drums on/off"></img>
                     </div>
                 </div>
 
@@ -138,54 +193,62 @@ export default function Mainpage() {
                         alignItems: "center",
                         justifyContent: "space-between",
                         margin: "0px 10px",
-                        height: "100%",
+                        height: "75px",
                         border: "none",
 
                     }}>
                         <div className="firstSettingContainer2">
-                            <p>tonality:</p>
+
+                            
 
                             <div className="firstSettingContainerRow">
-                            <select className="selector" value={tonality} onChange={(e) => setTonality(Number(e.target.value))}>
-                                {tonalities.map((tone, index) => (
-                                <option key={index} value={index}>
-                                    {tone}
-                                </option>
-                                ))}
-                            </select>
+                                
+                                <div className="firstSettingContainer2">                        
+                                    <label htmlFor="tonality">tonality:</label>
+                                
+                                    <select id="tonality" className="selector" value={tonality} onChange={(e) => setTonality(Number(e.target.value))}>
+                                        {tonalities.map((tone, index) => (
+                                        <option key={index} value={index}>
+                                            {tone}
+                                        </option>
+                                        ))}
+                                    </select>
+                                </div>
 
-                            <select className="selector" value={scale} onChange={(e) => setScale(e.target.value)}>
-                                <option value="major">major</option>
-                                <option value="minor">minor</option>
-                            </select>
+                                <div className="firstSettingContainer2"> 
+                                    <label htmlFor="scale">scale:</label>                        
+                                    <select id="scale" className="selector" value={scale} onChange={(e) => setScale(e.target.value)}>                                
+                                        <option value="major" >major</option>
+                                        <option value="minor">minor</option>
+                                    </select>
+                                </div>
                             </div>
+
+
+
+
                         </div>
 
                         <div className="firstSettingContainer">
-                            <p>tempo: <strong>{bpm + "BPM"}</strong></p>
+                            <label htmlFor="bpm">tempo: <strong>{bpm + "BPM"}</strong></label>
                             <input 
                                 className="slider"
                                 id="bpm"
                                 value={bpm}
                                 type="range"
                                 min="50"
-                                max="140"
+                                max="180"
                                 step="1"
-                                onChange={(e) => setBpm(Number(e.target.value))}
+                                onChange={(e) => {
+                                    setBpm(Number(e.target.value))}}
                                 onClick={() => {setTempoClicked(!tempoClicked)}} 
-                                //onClickCapture={}
-                            ></input>
-
+                            ></input>                            
                         </div>
                     </div>
-
                 </div>
-
             </div>
 
-
             <Settings tonality={tonality} scale={scale} bpm={bpm} loopStatus={loopStatus} metronomeStatus={metronomeStatus} drumStatus={drumStatus} tempoClicked={tempoClicked}/>
-
         </div>
         </>
     )

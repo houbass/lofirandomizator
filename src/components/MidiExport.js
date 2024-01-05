@@ -17,9 +17,6 @@ export default function MidiExport({ exportNotes, chordRate, setDownloadMidiData
 
                     let thisNotes = [];
 
-                    const checkFinalDuration = thisDuration * chordRate
-                    console.log(checkFinalDuration)
-
                     item.forEach((item2, index2) => {
                         thisNotes.push(item2.name)
                     })
@@ -42,5 +39,6 @@ export default function MidiExport({ exportNotes, chordRate, setDownloadMidiData
             };
             generateMidi();
         }
+        // eslint-disable-next-line
     }, [exportNotes])
 }
