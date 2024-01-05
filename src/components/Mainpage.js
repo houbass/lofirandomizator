@@ -124,10 +124,9 @@ export default function Mainpage() {
                 alt="background"
                 style={{
                     width: "100%",
-                    aspectRatio: "auto 1456 / 661"
+                    aspectRatio: "auto 1000 / 450"
                 }}
-                loading="lazy"
-                
+                loading="lazy"                
                 ></img>
             
                 <div 
