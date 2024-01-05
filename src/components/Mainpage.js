@@ -14,6 +14,7 @@ import Settings from "./Settings";
 import Notes from "./Notes";
 
 
+
 export default function Mainpage() {
     const { tonalities } = Notes();
 
@@ -39,6 +40,9 @@ export default function Mainpage() {
     const [mainOpacity, setMainOpacity] = useState(0);
     const [allImagesLoaded, setAllImagesLoaded] = useState(false);
     const imageUrls = [backgroundPic];
+
+    //loaded pictures
+    const [loadedPictures, setLoadedPictures] = useState([]);
 
     //HANDLERS
     //loop handler
@@ -84,6 +88,10 @@ export default function Mainpage() {
           img.onload = () => resolve(img);
           img.onerror = reject;
           img.src = url;
+          img.loading = "lazy";
+          setLoadedPictures([
+            ...loadedPictures, img
+          ])
         });
   
       const loadAllImages = async () => {
@@ -106,6 +114,7 @@ export default function Mainpage() {
         setMainOpacity(1);
       }
       // eslint-disable-next-line
+
     }, [allImagesLoaded]);
 
     return(
@@ -118,16 +127,19 @@ export default function Mainpage() {
         }}
         >
             <div>
+
                 <img 
                 className="backgroundPic" 
-                src={backgroundPic} 
+                src={loadedPictures[0]?.src} 
                 alt="background"
                 style={{
                     width: "100%",
                     aspectRatio: "auto 1000 / 450"
                 }}
-                loading="lazy"                
+                loading="lazy"        
+                //loading="eager"        
                 ></img>
+
             
                 <div 
                 style={{
