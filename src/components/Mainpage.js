@@ -14,7 +14,6 @@ import Settings from "./Settings";
 import Notes from "./Notes";
 
 
-
 export default function Mainpage() {
     const { tonalities } = Notes();
 
@@ -252,7 +251,7 @@ export default function Mainpage() {
                                 step="1"
                                 onChange={(e) => {
                                     setBpm(Number(e.target.value))}}
-                                onClick={() => {setTempoClicked(!tempoClicked)}} 
+                                onMouseUp={() => {setTempoClicked(!tempoClicked)}} 
                             ></input>                            
                         </div>
                     </div>
